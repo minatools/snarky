@@ -8,5 +8,6 @@ cc_library(
         "inttype.hpp",
         "test.hpp",
     ],
+    include_prefix = "cybozu"
 )
 
