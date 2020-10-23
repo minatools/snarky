@@ -9,7 +9,8 @@ let with_formatter name ~f =
 
 let () =
   with_formatter "vector_ffi_bindings.c" ~f:(fun fmt ->
-      Format.pp_print_string fmt {c|
+      Format.pp_print_string fmt
+        {c|
 #include "common.h"
 #include "caml_logging.h"
 |c} ;
