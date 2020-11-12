@@ -80,7 +80,7 @@ cc_binary(
         "//bzl/external/libgmp",
         "//bzl/external/openmp"
     ] + select({
-        "@//bzl/config:enable_curve_bn128": ["@libff//libff/algebra/curves/bn128"],
+        "//bzl/config:enable_curve_bn128": ["@libff//libff/algebra/curves/bn128"],
         "//conditions:default": [],
     })
 )
@@ -169,7 +169,7 @@ cc_library(
         # "@libff//libff/algebra/curves/mnt753/mnt6753:public_params",
         "@libff//libff/algebra/fields:bigint",
     ] + select({
-        "@//bzl/config:enable_curve_bn128": ["@libff//libff/algebra/curves/bn128"],
+        "//bzl/config:enable_curve_bn128": ["@libff//libff/algebra/curves/bn128"],
         "//conditions:default": [],
     })
 )

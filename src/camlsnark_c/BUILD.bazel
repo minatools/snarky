@@ -7,7 +7,7 @@ load(
     "ocaml_executable",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
 
 COMMON_OPTS = select({
@@ -48,7 +48,7 @@ ocaml_module(
 ocaml_module(
     name = "snark_ffi_bindings.cm_",
     src  = ":libsnark_ffi_bindings_ml",  ## generated file
-    ns_module = "//src/camlsnark_c/libsnark_bindings:snarky_libsnark_bindings_ns_module",
+    ns = "//src/camlsnark_c/libsnark_bindings:snarky_libsnark_bindings_ns_module",
     opts = IMPL_OPTS + ["-thread"],
     visibility = ["//visibility:public"],
     deps = [

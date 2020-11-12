@@ -5,21 +5,17 @@ load(
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
+    "ppx_executable",
 )
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 load(
     "//:BUILD.bzl",
-    "GLOBAL_ARCHIVE_OPTS",
-    "GLOBAL_INTERFACE_OPTS",
-    "GLOBAL_MODULE_OPTS",
-    "GLOBAL_NS_MODULE_OPTS",
-)
-load(
-    "//snarky:BUILD.bzl",
     "REPO_ARCHIVE_OPTS",
     "REPO_INTERFACE_OPTS",
     "REPO_MODULE_OPTS",
     "REPO_NS_MODULE_OPTS",
+    "REPO_PPX_EXECUTABLE_OPTS",
 )
 load(
     ":BUILD.bzl",
@@ -27,18 +23,21 @@ load(
     "PKG_INTERFACE_OPTS",
     "PKG_MODULE_OPTS",
     "PKG_NS_MODULE_OPTS",
+    "PKG_PPX_EXECUTABLE_OPTS",
 )
 
+THIS_PPX_EXECUTABLE_OPTS = REPO_PPX_EXECUTABLE_OPTS + PKG_PPX_EXECUTABLE_OPTS
+
 ################################################################
-## STANZA 1: SNARKY_BACKENDLESS
+## STANZA 1: LIBRARY SNARKY_BACKENDLESS
 ################################################################
-SNARKY_BACKENDLESS_ARCHIVE_OPTS = GLOBAL_ARCHIVE_OPTS + REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + []
+SNARKY_BACKENDLESS_INTERFACE_OPTS = REPO_INTERFACE_OPTS + PKG_INTERFACE_OPTS
 
-SNARKY_BACKENDLESS_INTERFACE_OPTS = []
+SNARKY_BACKENDLESS_MODULE_OPTS = REPO_MODULE_OPTS + PKG_MODULE_OPTS
 
-SNARKY_BACKENDLESS_MODULE_OPTS = GLOBAL_MODULE_OPTS + REPO_MODULE_OPTS + PKG_MODULE_OPTS + []
+SNARKY_BACKENDLESS_ARCHIVE_OPTS = REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + []
 
-SNARKY_BACKENDLESS_NS_MODULE_OPTS = []
+SNARKY_BACKENDLESS_NS_MODULE_OPTS = REPO_NS_MODULE_OPTS + PKG_NS_MODULE_OPTS
 
 SNARKY_BACKENDLESS_DEPS = [
     # do not sort (buildifier)
@@ -49,60 +48,54 @@ SNARKY_BACKENDLESS_DEPS = [
     "@snarky//src/intf:snarky_intf",
 ]
 
-SNARKY_BACKENDLESS_PPX = "@//bzl/ppx:ppx[ppx_sexp_conv][ppx_bin_prot][ppx_let][ppx_hash][ppx_compare][ppx_deriving.enum][ppx_assert][ppx_deriving.eq][ppx_snarky][ppx_fields_conv][ppx_inline_test][ppx_custom_printf]"
-
-SNARKY_BACKENDLESS_PPX_ARGS = [
-    # do not sort (buildifier)
-    "-inline-test-lib",
-    "snarky_backendless",
-]
-
+##############
 ocaml_archive(
     name = "snarky_backendless",
     opts = SNARKY_BACKENDLESS_ARCHIVE_OPTS,
     visibility = ["//visibility:public"],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":As_prover",
-        ":As_prover0",
-        ":As_prover_intf",
-        ":Backend_extended",
-        ":Backend_intf",
-        ":Bin_prot_io",
-        ":Boolean",
-        ":Checked",
-        ":Checked_intf",
-        ":Checked_runner",
-        ":Constraint",
-        ":Constraint_system",
-        ":Cvar",
-        ":Enumerable",
-        ":Enumerable_intf",
-        ":Free_monad",
-        ":Handle",
-        ":Knapsack",
-        ":Lens",
-        ":Merkle_tree",
-        ":Monad_let",
-        ":Monad_sequence",
-        ":Number",
-        ":Number_intf",
-        ":Pedersen",
-        ":Request",
-        ":Restrict_monad",
-        ":Run_state",
-        ":Snark",
-        ":Snark0",
-        ":Snark_intf",
-        ":Snarky_backendless",
-        ":Traversable",
-        ":Typ",
-        ":Typ_monads",
-        ":Types",
+        ":_As_prover",
+        ":_As_prover0",
+        ":_As_prover_intf",
+        ":_Backend_extended",
+        ":_Backend_intf",
+        ":_Bin_prot_io",
+        ":_Boolean",
+        ":_Checked",
+        ":_Checked_intf",
+        ":_Checked_runner",
+        ":_Constraint",
+        ":_Constraint_system",
+        ":_Cvar",
+        ":_Enumerable",
+        ":_Enumerable_intf",
+        ":_Free_monad",
+        ":_Handle",
+        ":_Knapsack",
+        ":_Lens",
+        ":_Merkle_tree",
+        ":_Monad_let",
+        ":_Monad_sequence",
+        ":_Number",
+        ":_Number_intf",
+        ":_Pedersen",
+        ":_Request",
+        ":_Restrict_monad",
+        ":_Run_state",
+        ":_Snark",
+        ":_Snark0",
+        ":_Snark_intf",
+        ":_Snarky_backendless",
+        ":_Traversable",
+        ":_Typ",
+        ":_Typ_monads",
+        ":_Types",
     ],
 )
 
-ocaml_ns_module(
+#########
+ocaml_ns(
     name = "Snarky_backendless_ns",
     ns = "snarky_backendless",
     opts = SNARKY_BACKENDLESS_NS_MODULE_OPTS,
@@ -147,720 +140,948 @@ ocaml_ns_module(
     ],
 )
 
+#############
 ocaml_module(
-    name = "As_prover",
-    src = "as_prover.ml",
-    intf = ":_As_prover",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":As_prover0",
-        ":As_prover_intf",
-        ":Checked",
-        ":Checked_intf",
-        ":Typ_monads",
-    ],
-)
-
-ocaml_interface(
     name = "_As_prover",
+    src = "as_prover.ml",
+    intf = ":_As_prover.cmi",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_As_prover0",
+        ":_As_prover_intf",
+        ":_Checked",
+        ":_Checked_intf",
+        ":_Typ_monads",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_As_prover.cmi",
     src = "as_prover.mli",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_INTERFACE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":As_prover_intf",
-        ":Checked",
-        ":Checked_intf",
+        ":_As_prover_intf",
+        ":_Checked",
+        ":_Checked_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "As_prover0",
+    name = "_As_prover0",
     src = "as_prover0.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Handle",
-        ":Lens",
-        ":Monad_let",
-        ":Request",
-        ":Typ_monads",
-        ":Types",
+        ":_Handle",
+        ":_Lens",
+        ":_Monad_let",
+        ":_Request",
+        ":_Typ_monads",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "As_prover_intf",
+    name = "_As_prover_intf",
     src = "as_prover_intf.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Cvar",
-        ":Handle",
-        ":Lens",
-        ":Monad_let",
-        ":Request",
-        ":Typ_monads",
-        ":Types",
+        ":_Cvar",
+        ":_Handle",
+        ":_Lens",
+        ":_Monad_let",
+        ":_Request",
+        ":_Typ_monads",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Backend_extended",
+    name = "_Backend_extended",
     src = "backend_extended.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Backend_intf",
-        ":Constraint",
-        ":Cvar",
+        ":_Backend_intf",
+        ":_Constraint",
+        ":_Cvar",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Backend_intf",
+    name = "_Backend_intf",
     src = "backend_intf.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Constraint",
-        ":Cvar",
+        ":_Constraint",
+        ":_Cvar",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Bin_prot_io",
+    name = "_Bin_prot_io",
     src = "bin_prot_io.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Boolean",
-    src = "boolean.ml",
-    intf = ":_Boolean",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS,
-)
-
-ocaml_interface(
     name = "_Boolean",
+    src = "boolean.ml",
+    intf = ":_Boolean.cmi",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS,
+)
+
+################
+ocaml_interface(
+    name = "_Boolean.cmi",
     src = "boolean.mli",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_INTERFACE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Checked",
+    name = "_Checked",
     src = "checked.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":As_prover0",
-        ":As_prover_intf",
-        ":Checked_intf",
-        ":Constraint",
-        ":Cvar",
-        ":Handle",
-        ":Lens",
-        ":Monad_let",
-        ":Request",
-        ":Run_state",
-        ":Typ_monads",
-        ":Types",
+        ":_As_prover0",
+        ":_As_prover_intf",
+        ":_Checked_intf",
+        ":_Constraint",
+        ":_Cvar",
+        ":_Handle",
+        ":_Lens",
+        ":_Monad_let",
+        ":_Request",
+        ":_Run_state",
+        ":_Typ_monads",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Checked_intf",
+    name = "_Checked_intf",
     src = "checked_intf.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Constraint",
-        ":Cvar",
-        ":Handle",
-        ":Lens",
-        ":Monad_let",
-        ":Request",
-        ":Run_state",
-        ":Types",
+        ":_Constraint",
+        ":_Cvar",
+        ":_Handle",
+        ":_Lens",
+        ":_Monad_let",
+        ":_Request",
+        ":_Run_state",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Checked_runner",
+    name = "_Checked_runner",
     src = "checked_runner.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":As_prover",
-        ":As_prover_intf",
-        ":Backend_extended",
-        ":Checked",
-        ":Checked_intf",
-        ":Constraint",
-        ":Constraint_system",
-        ":Cvar",
-        ":Handle",
-        ":Lens",
-        ":Monad_let",
-        ":Request",
-        ":Run_state",
-        ":Typ_monads",
-        ":Types",
+        ":_As_prover",
+        ":_As_prover_intf",
+        ":_Backend_extended",
+        ":_Checked",
+        ":_Checked_intf",
+        ":_Constraint",
+        ":_Constraint_system",
+        ":_Cvar",
+        ":_Handle",
+        ":_Lens",
+        ":_Monad_let",
+        ":_Request",
+        ":_Run_state",
+        ":_Typ_monads",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Constraint",
+    name = "_Constraint",
     src = "constraint.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Constraint_system",
+    name = "_Constraint_system",
     src = "constraint_system.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Backend_intf",
+        ":_Backend_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Cvar",
+    name = "_Cvar",
     src = "cvar.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Enumerable",
-    src = "enumerable.ml",
-    intf = ":_Enumerable",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":Boolean",
-        ":Checked",
-        ":Constraint",
-        ":Snark_intf",
-        ":Typ",
-    ],
-)
-
-ocaml_interface(
     name = "_Enumerable",
+    src = "enumerable.ml",
+    intf = ":_Enumerable.cmi",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_Boolean",
+        ":_Checked",
+        ":_Constraint",
+        ":_Snark_intf",
+        ":_Typ",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Enumerable.cmi",
     src = "enumerable.mli",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_INTERFACE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Enumerable_intf",
-        ":Snark_intf",
+        ":_Enumerable_intf",
+        ":_Snark_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Enumerable_intf",
+    name = "_Enumerable_intf",
     src = "enumerable_intf.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Free_monad",
+    name = "_Free_monad",
     src = "free_monad.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Monad_let",
+        ":_Monad_let",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Handle",
+    name = "_Handle",
     src = "handle.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Knapsack",
-    src = "knapsack.ml",
-    intf = ":_Knapsack",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":Boolean",
-        ":Checked",
-        ":Snark_intf",
-        ":Typ",
-    ],
-)
-
-ocaml_interface(
     name = "_Knapsack",
+    src = "knapsack.ml",
+    intf = ":_Knapsack.cmi",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_Boolean",
+        ":_Checked",
+        ":_Snark_intf",
+        ":_Typ",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Knapsack.cmi",
     src = "knapsack.mli",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_INTERFACE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Boolean",
-        ":Checked",
-        ":Snark_intf",
-        ":Typ",
+        ":_Boolean",
+        ":_Checked",
+        ":_Snark_intf",
+        ":_Typ",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Lens",
+    name = "_Lens",
     src = "lens.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Merkle_tree",
-    src = "merkle_tree.ml",
-    intf = ":_Merkle_tree",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":Boolean",
-        ":Lens",
-        ":Request",
-        ":Snark_intf",
-        ":Typ",
-    ],
-)
-
-ocaml_interface(
     name = "_Merkle_tree",
+    src = "merkle_tree.ml",
+    intf = ":_Merkle_tree.cmi",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_Boolean",
+        ":_Lens",
+        ":_Request",
+        ":_Snark_intf",
+        ":_Typ",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Merkle_tree.cmi",
     src = "merkle_tree.mli",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_INTERFACE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Boolean",
-        ":Checked",
-        ":Lens",
-        ":Request",
-        ":Snark_intf",
-        ":Typ",
+        ":_Boolean",
+        ":_Checked",
+        ":_Lens",
+        ":_Request",
+        ":_Snark_intf",
+        ":_Typ",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Monad_let",
+    name = "_Monad_let",
     src = "monad_let.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Monad_sequence",
+    name = "_Monad_sequence",
     src = "monad_sequence.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Monad_let",
+        ":_Monad_let",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Number",
-    src = "number.ml",
-    intf = ":_Number",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":Boolean",
-        ":Snark_intf",
-    ],
-)
-
-ocaml_interface(
     name = "_Number",
+    src = "number.ml",
+    intf = ":_Number.cmi",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_Boolean",
+        ":_Snark_intf",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Number.cmi",
     src = "number.mli",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_INTERFACE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Number_intf",
-        ":Snark_intf",
+        ":_Number_intf",
+        ":_Snark_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Number_intf",
+    name = "_Number_intf",
     src = "number_intf.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Pedersen",
+    name = "_Pedersen",
     src = "pedersen.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Boolean",
-        ":Checked",
-        ":Snark_intf",
-        ":Typ",
+        ":_Boolean",
+        ":_Checked",
+        ":_Snark_intf",
+        ":_Typ",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Request",
-    src = "request.ml",
-    intf = ":_Request",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS,
-)
-
-ocaml_interface(
     name = "_Request",
-    src = "request.mli",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_INTERFACE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    src = "request.ml",
+    intf = ":_Request.cmi",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
-ocaml_module(
-    name = "Restrict_monad",
-    src = "restrict_monad.ml",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":Monad_let",
-    ],
-)
-
-ocaml_module(
-    name = "Run_state",
-    src = "run_state.ml",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":Constraint",
-        ":Constraint_system",
-        ":Cvar",
-        ":Request",
-    ],
-)
-
-ocaml_module(
-    name = "Snark",
-    src = "snark.ml",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":Backend_intf",
-        ":Knapsack",
-        ":Merkle_tree",
-        ":Snark0",
-    ],
-)
-
-ocaml_module(
-    name = "Snark0",
-    src = "snark0.ml",
-    intf = ":_Snark0",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":As_prover",
-        ":As_prover0",
-        ":As_prover_intf",
-        ":Backend_extended",
-        ":Backend_intf",
-        ":Bin_prot_io",
-        ":Boolean",
-        ":Checked",
-        ":Checked_intf",
-        ":Checked_runner",
-        ":Constraint",
-        ":Constraint_system",
-        ":Cvar",
-        ":Enumerable",
-        ":Handle",
-        ":Monad_sequence",
-        ":Number",
-        ":Request",
-        ":Restrict_monad",
-        ":Run_state",
-        ":Snark_intf",
-        ":Typ",
-        ":Typ_monads",
-        ":Types",
-    ],
-)
-
+################
 ocaml_interface(
-    name = "_Snark0",
-    src = "snark0.mli",
-    ns_module = ":Snarky_backendless_ns",
+    name = "_Request.cmi",
+    src = "request.mli",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_INTERFACE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
+    ppx = ":ppx1.exe",
+    ppx_args = [
         # do not sort (buildifier)
-        ":Backend_intf",
-        ":Snark_intf",
+        "-inline-test-lib",
+        "snarky_backendless",
     ],
-)
-
-ocaml_module(
-    name = "Snark_intf",
-    src = "snark_intf.ml",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":As_prover",
-        ":Boolean",
-        ":Checked",
-        ":Constraint",
-        ":Cvar",
-        ":Enumerable_intf",
-        ":Lens",
-        ":Monad_let",
-        ":Monad_sequence",
-        ":Number_intf",
-        ":Request",
-        ":Run_state",
-        ":Traversable",
-        ":Typ",
-        ":Typ_monads",
-        ":Types",
-    ],
-)
-
-ocaml_module(
-    name = "Snarky_backendless",
-    src = "snarky_backendless.ml",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
-    deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
-        ":As_prover",
-        ":As_prover0",
-        ":As_prover_intf",
-        ":Backend_extended",
-        ":Backend_intf",
-        ":Bin_prot_io",
-        ":Boolean",
-        ":Checked",
-        ":Checked_intf",
-        ":Checked_runner",
-        ":Constraint",
-        ":Constraint_system",
-        ":Cvar",
-        ":Enumerable",
-        ":Enumerable_intf",
-        ":Free_monad",
-        ":Handle",
-        ":Knapsack",
-        ":Lens",
-        ":Merkle_tree",
-        ":Monad_let",
-        ":Monad_sequence",
-        ":Number",
-        ":Number_intf",
-        ":Pedersen",
-        ":Request",
-        ":Restrict_monad",
-        ":Run_state",
-        ":Snark",
-        ":Snark0",
-        ":Snark_intf",
-        ":Traversable",
-        ":Typ",
-        ":Typ_monads",
-        ":Types",
-    ],
-)
-
-ocaml_module(
-    name = "Traversable",
-    src = "traversable.ml",
-    ns_module = ":Snarky_backendless_ns",
-    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
     deps = SNARKY_BACKENDLESS_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Typ",
+    name = "_Restrict_monad",
+    src = "restrict_monad.ml",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_Monad_let",
+    ],
+)
+
+#############
+ocaml_module(
+    name = "_Run_state",
+    src = "run_state.ml",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_Constraint",
+        ":_Constraint_system",
+        ":_Cvar",
+        ":_Request",
+    ],
+)
+
+#############
+ocaml_module(
+    name = "_Snark",
+    src = "snark.ml",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_Backend_intf",
+        ":_Knapsack",
+        ":_Merkle_tree",
+        ":_Snark0",
+    ],
+)
+
+#############
+ocaml_module(
+    name = "_Snark0",
+    src = "snark0.ml",
+    intf = ":_Snark0.cmi",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_As_prover",
+        ":_As_prover0",
+        ":_As_prover_intf",
+        ":_Backend_extended",
+        ":_Backend_intf",
+        ":_Bin_prot_io",
+        ":_Boolean",
+        ":_Checked",
+        ":_Checked_intf",
+        ":_Checked_runner",
+        ":_Constraint",
+        ":_Constraint_system",
+        ":_Cvar",
+        ":_Enumerable",
+        ":_Handle",
+        ":_Monad_sequence",
+        ":_Number",
+        ":_Request",
+        ":_Restrict_monad",
+        ":_Run_state",
+        ":_Snark_intf",
+        ":_Typ",
+        ":_Typ_monads",
+        ":_Types",
+    ],
+)
+
+################
+ocaml_interface(
+    name = "_Snark0.cmi",
+    src = "snark0.mli",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_INTERFACE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_Backend_intf",
+        ":_Snark_intf",
+    ],
+)
+
+#############
+ocaml_module(
+    name = "_Snark_intf",
+    src = "snark_intf.ml",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_As_prover",
+        ":_Boolean",
+        ":_Checked",
+        ":_Constraint",
+        ":_Cvar",
+        ":_Enumerable_intf",
+        ":_Lens",
+        ":_Monad_let",
+        ":_Monad_sequence",
+        ":_Number_intf",
+        ":_Request",
+        ":_Run_state",
+        ":_Traversable",
+        ":_Typ",
+        ":_Typ_monads",
+        ":_Types",
+    ],
+)
+
+#############
+ocaml_module(
+    name = "_Snarky_backendless",
+    src = "snarky_backendless.ml",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        # do not sort (buildifier)
+        ":_As_prover",
+        ":_As_prover0",
+        ":_As_prover_intf",
+        ":_Backend_extended",
+        ":_Backend_intf",
+        ":_Bin_prot_io",
+        ":_Boolean",
+        ":_Checked",
+        ":_Checked_intf",
+        ":_Checked_runner",
+        ":_Constraint",
+        ":_Constraint_system",
+        ":_Cvar",
+        ":_Enumerable",
+        ":_Enumerable_intf",
+        ":_Free_monad",
+        ":_Handle",
+        ":_Knapsack",
+        ":_Lens",
+        ":_Merkle_tree",
+        ":_Monad_let",
+        ":_Monad_sequence",
+        ":_Number",
+        ":_Number_intf",
+        ":_Pedersen",
+        ":_Request",
+        ":_Restrict_monad",
+        ":_Run_state",
+        ":_Snark",
+        ":_Snark0",
+        ":_Snark_intf",
+        ":_Traversable",
+        ":_Typ",
+        ":_Typ_monads",
+        ":_Types",
+    ],
+)
+
+#############
+ocaml_module(
+    name = "_Traversable",
+    src = "traversable.ml",
+    ns = ":Snarky_backendless_ns",
+    opts = SNARKY_BACKENDLESS_MODULE_OPTS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
+    deps = SNARKY_BACKENDLESS_DEPS,
+)
+
+#############
+ocaml_module(
+    name = "_Typ",
     src = "typ.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":As_prover",
-        ":As_prover_intf",
-        ":Checked",
-        ":Checked_intf",
-        ":Cvar",
-        ":Restrict_monad",
-        ":Traversable",
-        ":Typ_monads",
-        ":Types",
+        ":_As_prover",
+        ":_As_prover_intf",
+        ":_Checked",
+        ":_Checked_intf",
+        ":_Cvar",
+        ":_Restrict_monad",
+        ":_Traversable",
+        ":_Typ_monads",
+        ":_Types",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Typ_monads",
+    name = "_Typ_monads",
     src = "typ_monads.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Cvar",
-        ":Free_monad",
+        ":_Cvar",
+        ":_Free_monad",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Types",
+    name = "_Types",
     src = "types.ml",
-    ns_module = ":Snarky_backendless_ns",
+    ns = ":Snarky_backendless_ns",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
-    ppx = SNARKY_BACKENDLESS_PPX,
-    ppx_args = SNARKY_BACKENDLESS_PPX_ARGS,
+    ppx = ":ppx1.exe",
+    ppx_args = [
+        # do not sort (buildifier)
+        "-inline-test-lib",
+        "snarky_backendless",
+    ],
     deps = SNARKY_BACKENDLESS_DEPS + [
         # do not sort (buildifier)
-        ":Constraint",
-        ":Cvar",
-        ":Handle",
-        ":Request",
-        ":Run_state",
-        ":Typ_monads",
+        ":_Constraint",
+        ":_Cvar",
+        ":_Handle",
+        ":_Request",
+        ":_Run_state",
+        ":_Typ_monads",
     ],
 )
 
-################################################################
-#### Package CLI Options
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+###################################################################
+######## Configuration Settings - see :BUILD.bzl #################
+bool_flag(
+    name = "always-link",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_always_link",
+    flag_values = {":always-link": str(True)},
+)
 
 bool_flag(
     name = "debug",
@@ -873,6 +1094,26 @@ config_setting(
 )
 
 bool_flag(
+    name = "threads",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "enable_threads",
+    flag_values = {":threads": str(True)},
+)
+
+bool_flag(
+    name = "tooling",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_tooling",
+    flag_values = {":tooling": str(True)},
+)
+
+bool_flag(
     name = "verbose",
     build_setting_default = False,
 )
@@ -880,4 +1121,58 @@ bool_flag(
 config_setting(
     name = "enable_verbose",
     flag_values = {":verbose": str(True)},
+)
+
+## PPX control
+string_flag(
+    name = "ppx-out",
+    build_setting_default = "binary",
+    values = [
+        "binary",
+        "text",
+    ],
+)
+
+config_setting(
+    name = "enable_ppx_output_format_text",
+    flag_values = {":ppx-out": "text"},
+)
+
+config_setting(
+    name = "enable_ppx_output_format_binary",
+    flag_values = {":ppx-out": "binary"},
+)
+
+###############
+ppx_executable(
+    name = "ppx1.exe",
+    lazy_deps = [
+        "@opam//pkg:ppx_hash.runtime-lib",
+        "@opam//pkg:ppx_sexp_conv.runtime-lib",
+        "@opam//pkg:ppx_deriving.runtime",
+        "@opam//pkg:ppx_assert.runtime-lib",
+        "@opam//pkg:ppx_compare.runtime-lib",
+        "@opam//pkg:ppx_inline_test.runtime-lib",
+        "@opam//pkg:bin_prot",
+        "@opam//pkg:fieldslib",
+    ],
+    main = "//bzl/ppx:Driver",
+    opts = THIS_PPX_EXECUTABLE_OPTS,
+    visibility = [
+        "//src/base:__pkg__",
+    ],
+    deps = [
+        "@opam//pkg:ppx_assert",
+        "@opam//pkg:ppx_bin_prot",
+        "@opam//pkg:ppx_compare",
+        "@opam//pkg:ppx_custom_printf",
+        "@opam//pkg:ppx_deriving.enum",
+        "@opam//pkg:ppx_deriving.eq",
+        "@opam//pkg:ppx_fields_conv",
+        "@opam//pkg:ppx_hash",
+        "@opam//pkg:ppx_inline_test",
+        "@opam//pkg:ppx_let",
+        "@opam//pkg:ppx_sexp_conv",
+        "@snarky//ppx:ppx_snarky",
+    ],
 )

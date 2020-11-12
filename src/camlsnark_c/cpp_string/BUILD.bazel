@@ -5,25 +5,23 @@ load(
 )
 load(
     "//:BUILD.bzl",
-    "GLOBAL_INTERFACE_OPTS",
-    "GLOBAL_MODULE_OPTS",
-)
-load(
-    "//snarky:BUILD.bzl",
     "REPO_INTERFACE_OPTS",
     "REPO_MODULE_OPTS",
 )
+# load(
+#     "//snarky:BUILD.bzl",
+#     "PKG_MODULE_OPTS",
+# )
 
 PKG_DEBUG_OPT = select({":enable_debug": ["-g"], "//conditions:default": []})
 PKG_VERBOSE_OPT = select({":enable_verbose": ["-verbose"], "//conditions:default": []})
-PKG_INTERFACE_OPTS = PKG_DEBUG_OPT + PKG_VERBOSE_OPT
-PKG_MODULE_OPTS = PKG_INTERFACE_OPTS
+PKG_MODULE_OPTS = []
 
 ################################################################
 ## STANZA 1: SNARKY_CPP_STRING
 ################################################################
 SNARKY_CPP_STRING_INTERFACE_OPTS = []
-SNARKY_CPP_STRING_MODULE_OPTS = GLOBAL_MODULE_OPTS + REPO_MODULE_OPTS + PKG_MODULE_OPTS + []
+SNARKY_CPP_STRING_MODULE_OPTS = REPO_MODULE_OPTS + PKG_MODULE_OPTS + []
 SNARKY_CPP_STRING_DEPS = [
     # do not sort (buildifier)
     "@opam//pkg:core",

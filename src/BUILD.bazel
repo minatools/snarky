@@ -3,7 +3,7 @@ load(
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
 
 COMMON_OPTS = select({
@@ -24,7 +24,7 @@ COMMON_DEPS = []
 
 SNARKY_NS = "Snarky"
 
-PPX = "@//bzl/ppx:ppx[ppx_snarky][ppx_jane][ppx_deriving.enum][ppx_deriving.eq][bisect_ppx]"
+PPX = "@//bzl/ppx:ppx.exe[ppx_snarky][ppx_jane][ppx_deriving.enum][ppx_deriving.eq][bisect_ppx]"
 PPX_ARGS = [
     # do not sort (buildifier)
     "--conditional",
@@ -131,7 +131,7 @@ ocaml_archive(
     }
 )
 
-ocaml_ns_module(
+ocaml_ns(
     name = "snarky_ns_module",
     ns = SNARKY_NS,
     submodules = [
@@ -153,7 +153,7 @@ ocaml_ns_module(
 ocaml_interface(
     name = "backend_types.cmi",
     src = "backend_types.mli",
-    ns_module = ":snarky_ns_module",
+    ns = ":snarky_ns_module",
     ppx = PPX,
     ppx_args = PPX_ARGS,
     opts = INTF_OPTS,
@@ -168,7 +168,7 @@ ocaml_module(
     name = "backend_types.cm_",
     intf = ":backend_types.cmi",
     src  = "backend_types.ml",
-    ns_module = ":snarky_ns_module",
+    ns = ":snarky_ns_module",
     opts = IMPL_OPTS,
     ppx = PPX,
     ppx_args = PPX_ARGS,
@@ -182,7 +182,7 @@ ocaml_module(
 ocaml_module(
     name = "backends.cm_",
     src  = "backends.ml",
-    ns_module = ":snarky_ns_module",
+    ns = ":snarky_ns_module",
     opts = IMPL_OPTS,
     ppx = PPX,
     ppx_args = PPX_ARGS,
@@ -192,7 +192,7 @@ ocaml_module(
 ocaml_module(
     name = "snark.cm_",
     src  = "snark.ml",
-    ns_module = ":snarky_ns_module",
+    ns       = ":snarky_ns_module",
     opts = IMPL_OPTS,
     ppx = PPX,
     ppx_args = PPX_ARGS,
@@ -207,7 +207,7 @@ ocaml_module(
     ## used by snarky_universe/input_spec.ml
     visibility = ["//visibility:public"],
     src  = "toplevel.ml",
-    ns_module = ":snarky_ns_module",
+    ns       = ":snarky_ns_module",
     opts = IMPL_OPTS,
     ppx = PPX,
     ppx_args = PPX_ARGS,
@@ -226,7 +226,7 @@ ocaml_module(
 ocaml_module(
     name = "snarky.cm_",
     src  = "snarky.ml",
-    ns_module = ":snarky_ns_module",
+    ns       = ":snarky_ns_module",
     opts = IMPL_OPTS,
     ppx = PPX,
     ppx_args = PPX_ARGS,
@@ -242,7 +242,7 @@ ocaml_module(
 ocaml_module(
     name = "gpu_prover.cm_",
     src  = "gpu_prover.ml",
-    ns_module = ":snarky_ns_module",
+    ns       = ":snarky_ns_module",
     opts = IMPL_OPTS,
     # ppx = PPX,
     # ppx_args = PPX_ARGS,

@@ -5,17 +5,11 @@ load(
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 load(
     "//:BUILD.bzl",
-    "GLOBAL_ARCHIVE_OPTS",
-    "GLOBAL_INTERFACE_OPTS",
-    "GLOBAL_MODULE_OPTS",
-    "GLOBAL_NS_MODULE_OPTS",
-)
-load(
-    "//snarky:BUILD.bzl",
     "REPO_ARCHIVE_OPTS",
     "REPO_INTERFACE_OPTS",
     "REPO_MODULE_OPTS",
@@ -30,22 +24,22 @@ load(
 )
 
 ################################################################
-## STANZA 1: SPONGE
+## STANZA 1: LIBRARY SPONGE
 ################################################################
-SPONGE_ARCHIVE_OPTS = GLOBAL_ARCHIVE_OPTS + REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + []
+SPONGE_INTERFACE_OPTS = REPO_INTERFACE_OPTS + PKG_INTERFACE_OPTS
 
-SPONGE_INTERFACE_OPTS = []
+SPONGE_MODULE_OPTS = REPO_MODULE_OPTS + PKG_MODULE_OPTS
 
-SPONGE_MODULE_OPTS = GLOBAL_MODULE_OPTS + REPO_MODULE_OPTS + PKG_MODULE_OPTS + []
+SPONGE_ARCHIVE_OPTS = REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + []
 
-SPONGE_NS_MODULE_OPTS = []
+SPONGE_NS_MODULE_OPTS = REPO_NS_MODULE_OPTS + PKG_NS_MODULE_OPTS
 
 SPONGE_DEPS = [
     # do not sort (buildifier)
     "@opam//pkg:core_kernel",
 ]
 
-SPONGE_PPX = "@//bzl/ppx:ppx[ppx_jane][ppx_deriving.eq]"
+SPONGE_PPX = "@//bzl/ppx:ppx.exe[ppx_jane][ppx_deriving.eq]"
 
 SPONGE_PPX_ARGS = [
     # do not sort (buildifier)
@@ -53,20 +47,22 @@ SPONGE_PPX_ARGS = [
     "sponge",
 ]
 
+##############
 ocaml_archive(
     name = "sponge",
     opts = SPONGE_ARCHIVE_OPTS,
     visibility = ["//visibility:public"],
     deps = SPONGE_DEPS + [
         # do not sort (buildifier)
-        ":Constants",
-        ":Intf",
-        ":Params",
-        ":Sponge",
+        ":_Constants",
+        ":_Intf",
+        ":_Params",
+        ":_Sponge",
     ],
 )
 
-ocaml_ns_module(
+#########
+ocaml_ns(
     name = "Sponge_ns",
     ns = "sponge",
     opts = SPONGE_NS_MODULE_OPTS,
@@ -79,75 +75,88 @@ ocaml_ns_module(
     ],
 )
 
+#############
 ocaml_module(
-    name = "Constants",
+    name = "_Constants",
     src = "constants.ml",
-    ns_module = ":Sponge_ns",
+    ns = ":Sponge_ns",
     opts = SPONGE_MODULE_OPTS,
     ppx = SPONGE_PPX,
     ppx_args = SPONGE_PPX_ARGS,
     deps = SPONGE_DEPS + [
         # do not sort (buildifier)
-        ":Params",
+        ":_Params",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Intf",
+    name = "_Intf",
     src = "intf.ml",
-    ns_module = ":Sponge_ns",
+    ns = ":Sponge_ns",
     opts = SPONGE_MODULE_OPTS,
     ppx = SPONGE_PPX,
     ppx_args = SPONGE_PPX_ARGS,
     deps = SPONGE_DEPS + [
         # do not sort (buildifier)
-        ":Params",
+        ":_Params",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Params",
+    name = "_Params",
     src = "params.ml",
-    ns_module = ":Sponge_ns",
+    ns = ":Sponge_ns",
     opts = SPONGE_MODULE_OPTS,
     ppx = SPONGE_PPX,
     ppx_args = SPONGE_PPX_ARGS,
     deps = SPONGE_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Sponge",
+    name = "_Sponge",
     src = "sponge.ml",
-    intf = ":_Sponge",
-    ns_module = ":Sponge_ns",
+    intf = ":_Sponge.cmi",
+    ns = ":Sponge_ns",
     opts = SPONGE_MODULE_OPTS,
     ppx = SPONGE_PPX,
     ppx_args = SPONGE_PPX_ARGS,
     deps = SPONGE_DEPS + [
         # do not sort (buildifier)
-        ":Constants",
-        ":Intf",
-        ":Params",
+        ":_Constants",
+        ":_Intf",
+        ":_Params",
     ],
 )
 
+################
 ocaml_interface(
-    name = "_Sponge",
+    name = "_Sponge.cmi",
     src = "sponge.mli",
-    ns_module = ":Sponge_ns",
+    ns = ":Sponge_ns",
     opts = SPONGE_INTERFACE_OPTS,
     ppx = SPONGE_PPX,
     ppx_args = SPONGE_PPX_ARGS,
     deps = SPONGE_DEPS + [
         # do not sort (buildifier)
-        ":Intf",
-        ":Params",
+        ":_Intf",
+        ":_Params",
     ],
 )
 
-################################################################
-#### Package CLI Options
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+###################################################################
+######## Configuration Settings - see :BUILD.bzl #################
+bool_flag(
+    name = "always-link",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_always_link",
+    flag_values = {":always-link": str(True)},
+)
 
 bool_flag(
     name = "debug",
@@ -160,6 +169,26 @@ config_setting(
 )
 
 bool_flag(
+    name = "threads",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "enable_threads",
+    flag_values = {":threads": str(True)},
+)
+
+bool_flag(
+    name = "tooling",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_tooling",
+    flag_values = {":tooling": str(True)},
+)
+
+bool_flag(
     name = "verbose",
     build_setting_default = False,
 )
@@ -167,4 +196,24 @@ bool_flag(
 config_setting(
     name = "enable_verbose",
     flag_values = {":verbose": str(True)},
+)
+
+## PPX control
+string_flag(
+    name = "ppx-out",
+    build_setting_default = "binary",
+    values = [
+        "binary",
+        "text",
+    ],
+)
+
+config_setting(
+    name = "enable_ppx_output_format_text",
+    flag_values = {":ppx-out": "text"},
+)
+
+config_setting(
+    name = "enable_ppx_output_format_binary",
+    flag_values = {":ppx-out": "binary"},
 )

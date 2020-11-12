@@ -5,17 +5,11 @@ load(
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 load(
     "//:BUILD.bzl",
-    "GLOBAL_ARCHIVE_OPTS",
-    "GLOBAL_INTERFACE_OPTS",
-    "GLOBAL_MODULE_OPTS",
-    "GLOBAL_NS_MODULE_OPTS",
-)
-load(
-    "//snarky:BUILD.bzl",
     "REPO_ARCHIVE_OPTS",
     "REPO_INTERFACE_OPTS",
     "REPO_MODULE_OPTS",
@@ -30,15 +24,15 @@ load(
 )
 
 ################################################################
-## STANZA 1: BITSTRING_LIB
+## STANZA 1: LIBRARY BITSTRING_LIB
 ################################################################
-BITSTRING_LIB_ARCHIVE_OPTS = GLOBAL_ARCHIVE_OPTS + REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + ["-linkall"]
+BITSTRING_LIB_INTERFACE_OPTS = REPO_INTERFACE_OPTS + PKG_INTERFACE_OPTS
 
-BITSTRING_LIB_INTERFACE_OPTS = []
+BITSTRING_LIB_MODULE_OPTS = REPO_MODULE_OPTS + PKG_MODULE_OPTS
 
-BITSTRING_LIB_MODULE_OPTS = GLOBAL_MODULE_OPTS + REPO_MODULE_OPTS + PKG_MODULE_OPTS + []
+BITSTRING_LIB_ARCHIVE_OPTS = REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + ["-linkall"]
 
-BITSTRING_LIB_NS_MODULE_OPTS = []
+BITSTRING_LIB_NS_MODULE_OPTS = REPO_NS_MODULE_OPTS + PKG_NS_MODULE_OPTS
 
 BITSTRING_LIB_DEPS = [
     # do not sort (buildifier)
@@ -46,15 +40,16 @@ BITSTRING_LIB_DEPS = [
     "@snarky//tuple_lib",
 ]
 
-BITSTRING_LIB_PPX = "@//bzl/ppx:ppx[ppx_jane][ppx_deriving.eq][bisect_ppx]"
+BITSTRING_LIB_PPX = "@//bzl/ppx:ppx.exe[ppx_jane][ppx_deriving.eq][bisect_ppx]"
 
 BITSTRING_LIB_PPX_ARGS = [
     # do not sort (buildifier)
+    "--conditional",
     "-inline-test-lib",
     "bitstring_lib",
-    "-conditional",
 ]
 
+##############
 ocaml_archive(
     name = "bitstring_lib",
     doc = "Bitstring library",
@@ -62,11 +57,12 @@ ocaml_archive(
     visibility = ["//visibility:public"],
     deps = BITSTRING_LIB_DEPS + [
         # do not sort (buildifier)
-        ":Bitstring",
+        ":_Bitstring",
     ],
 )
 
-ocaml_ns_module(
+#########
+ocaml_ns(
     name = "Bitstring_lib_ns",
     ns = "bitstring_lib",
     opts = BITSTRING_LIB_NS_MODULE_OPTS,
@@ -76,30 +72,40 @@ ocaml_ns_module(
     ],
 )
 
+#############
 ocaml_module(
-    name = "Bitstring",
+    name = "_Bitstring",
     src = "bitstring.ml",
-    intf = ":_Bitstring",
-    ns_module = ":Bitstring_lib_ns",
+    intf = ":_Bitstring.cmi",
+    ns = ":Bitstring_lib_ns",
     opts = BITSTRING_LIB_MODULE_OPTS,
     ppx = BITSTRING_LIB_PPX,
     ppx_args = BITSTRING_LIB_PPX_ARGS,
     deps = BITSTRING_LIB_DEPS,
 )
 
+################
 ocaml_interface(
-    name = "_Bitstring",
+    name = "_Bitstring.cmi",
     src = "bitstring.mli",
-    ns_module = ":Bitstring_lib_ns",
+    ns = ":Bitstring_lib_ns",
     opts = BITSTRING_LIB_INTERFACE_OPTS,
     ppx = BITSTRING_LIB_PPX,
     ppx_args = BITSTRING_LIB_PPX_ARGS,
     deps = BITSTRING_LIB_DEPS,
 )
 
-################################################################
-#### Package CLI Options
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+###################################################################
+######## Configuration Settings - see :BUILD.bzl #################
+bool_flag(
+    name = "always-link",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_always_link",
+    flag_values = {":always-link": str(True)},
+)
 
 bool_flag(
     name = "debug",
@@ -112,6 +118,26 @@ config_setting(
 )
 
 bool_flag(
+    name = "threads",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "enable_threads",
+    flag_values = {":threads": str(True)},
+)
+
+bool_flag(
+    name = "tooling",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_tooling",
+    flag_values = {":tooling": str(True)},
+)
+
+bool_flag(
     name = "verbose",
     build_setting_default = False,
 )
@@ -119,4 +145,24 @@ bool_flag(
 config_setting(
     name = "enable_verbose",
     flag_values = {":verbose": str(True)},
+)
+
+## PPX control
+string_flag(
+    name = "ppx-out",
+    build_setting_default = "binary",
+    values = [
+        "binary",
+        "text",
+    ],
+)
+
+config_setting(
+    name = "enable_ppx_output_format_text",
+    flag_values = {":ppx-out": "text"},
+)
+
+config_setting(
+    name = "enable_ppx_output_format_binary",
+    flag_values = {":ppx-out": "binary"},
 )

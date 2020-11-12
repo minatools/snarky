@@ -2,74 +2,41 @@
 
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
-    "ocaml_archive",
     "ocaml_module",
-    "ocaml_ns_module",
 )
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 load(
     "//:BUILD.bzl",
-    "GLOBAL_ARCHIVE_OPTS",
-    "GLOBAL_MODULE_OPTS",
-    "GLOBAL_NS_MODULE_OPTS",
-)
-load(
-    "//snarky:BUILD.bzl",
-    "REPO_ARCHIVE_OPTS",
     "REPO_MODULE_OPTS",
-    "REPO_NS_MODULE_OPTS",
 )
 load(
     ":BUILD.bzl",
-    "PKG_ARCHIVE_OPTS",
     "PKG_MODULE_OPTS",
-    "PKG_NS_MODULE_OPTS",
 )
 
-################################################################
-## STANZA 1: H_LIST
-################################################################
-H_LIST_ARCHIVE_OPTS = GLOBAL_ARCHIVE_OPTS + REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + []
+## stanza_singleton_ocaml.mustache
+H_LIST_MODULE_OPTS = REPO_MODULE_OPTS + PKG_MODULE_OPTS
 
-H_LIST_MODULE_OPTS = GLOBAL_MODULE_OPTS + REPO_MODULE_OPTS + PKG_MODULE_OPTS + []
-
-H_LIST_NS_MODULE_OPTS = []
-
-H_LIST_DEPS = [
-    # do not sort (buildifier)
-]
-
-# ocaml_archive(
-#     name = "h_list",
-#     opts = H_LIST_ARCHIVE_OPTS,
-#     visibility = ["//visibility:public"],
-#     deps = H_LIST_DEPS + [
-#         # do not sort (buildifier)
-#         ":H_list",
-#     ],
-# )
-
-# ocaml_ns_module(
-#     name = "H_list_ns",
-#     ns = "h_list",
-#     opts = H_LIST_NS_MODULE_OPTS,
-#     submodules = [
-#         # do not sort (buildifier)
-#         "h_list.ml",
-#     ],
-# )
-
+#############
 ocaml_module(
     name = "h_list",
     src = "h_list.ml",
-    # ns_module = ":H_list_ns",
     opts = H_LIST_MODULE_OPTS,
-    deps = H_LIST_DEPS,
     visibility = ["//visibility:public"],
+    deps = [],
 )
 
-################################################################
-#### Package CLI Options
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+###################################################################
+######## Configuration Settings - see :BUILD.bzl #################
+bool_flag(
+    name = "always-link",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_always_link",
+    flag_values = {":always-link": str(True)},
+)
 
 bool_flag(
     name = "debug",
@@ -82,6 +49,26 @@ config_setting(
 )
 
 bool_flag(
+    name = "threads",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "enable_threads",
+    flag_values = {":threads": str(True)},
+)
+
+bool_flag(
+    name = "tooling",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_tooling",
+    flag_values = {":tooling": str(True)},
+)
+
+bool_flag(
     name = "verbose",
     build_setting_default = False,
 )
@@ -89,4 +76,24 @@ bool_flag(
 config_setting(
     name = "enable_verbose",
     flag_values = {":verbose": str(True)},
+)
+
+## PPX control
+string_flag(
+    name = "ppx-out",
+    build_setting_default = "binary",
+    values = [
+        "binary",
+        "text",
+    ],
+)
+
+config_setting(
+    name = "enable_ppx_output_format_text",
+    flag_values = {":ppx-out": "text"},
+)
+
+config_setting(
+    name = "enable_ppx_output_format_binary",
+    flag_values = {":ppx-out": "binary"},
 )

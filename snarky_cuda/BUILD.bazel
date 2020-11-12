@@ -3,7 +3,7 @@
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_archive",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
 load(
     "//:BUILD.bzl",
@@ -15,18 +15,51 @@ load(
     "REPO_ARCHIVE_OPTS",
     "REPO_NS_MODULE_OPTS",
 )
-load(
-    ":BUILD.bzl",
-    "PKG_ARCHIVE_OPTS",
-    "PKG_NS_MODULE_OPTS",
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+
+bool_flag(
+    name = "debug",
+    build_setting_default = True,
 )
 
+config_setting(
+    name = "enable_debug",
+    flag_values = {":debug": str(True)},
+)
+
+PKG_DEBUG_OPT = select({
+    ":enable_debug": ["-g"],
+    "//conditions:default": [],
+})
+
+bool_flag(
+    name = "verbose",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_verbose",
+    flag_values = {":verbose": str(True)},
+)
+
+PKG_VERBOSE_OPT = select({
+    ":enable_verbose": ["-verbose"],
+    "//conditions:default": [],
+})
+
+PKG_OPTS = PKG_DEBUG_OPT + PKG_VERBOSE_OPT
+
+PKG_ARCHIVE_OPTS = PKG_OPTS
+
+PKG_NS_MODULE_OPTS = PKG_OPTS
+
+## stanza_library.mustache
 ################################################################
-## STANZA 1: SNARKY_CUDA
+## STANZA 1: LIBRARY SNARKY_CUDA
 ################################################################
 SNARKY_CUDA_ARCHIVE_OPTS = GLOBAL_ARCHIVE_OPTS + REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + []
 
-SNARKY_CUDA_NS_MODULE_OPTS = []
+SNARKY_CUDA_NS_MODULE_OPTS = GLOBAL_NS_MODULE_OPTS + REPO_NS_MODULE_OPTS + PKG_NS_MODULE_OPTS
 
 SNARKY_CUDA_DEPS = [
     # do not sort (buildifier)
@@ -41,31 +74,7 @@ ocaml_archive(
     ],
 )
 
-ocaml_ns_module(
+ocaml_ns(
     name = "Snarky_cuda_ns",
     ns = "snarky_cuda",
-)
-
-################################################################
-#### Package CLI Options
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
-
-bool_flag(
-    name = "debug",
-    build_setting_default = True,
-)
-
-config_setting(
-    name = "enable_debug",
-    flag_values = {":debug": str(True)},
-)
-
-bool_flag(
-    name = "verbose",
-    build_setting_default = False,
-)
-
-config_setting(
-    name = "enable_verbose",
-    flag_values = {":verbose": str(True)},
 )

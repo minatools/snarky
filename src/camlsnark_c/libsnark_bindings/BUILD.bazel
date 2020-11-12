@@ -4,7 +4,7 @@ load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_archive",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
 
 COMMON_OPTS = select({
@@ -23,7 +23,7 @@ ARCHIVE_OPTS = COMMON_OPTS + LINK_OPTS
 SNARKY_LIBSNARK_BINDINGS_NS = "Snarky_libsnark_bindings"
 
 ## (ppx_custom_printf ppx_sexp_conv ppx_bin_prot ppx_inline_test)
-PPX4_9C0A2F04 = "//bzl/ppx:ppx[ppx_custom_printf][ppx_sexp_conv][ppx_bin_prot][ppx_inline_test]"
+PPX4_9C0A2F04 = "//bzl/ppx:ppx.exe[ppx_custom_printf][ppx_sexp_conv][ppx_bin_prot][ppx_inline_test]"
 # "@//ppx/exe:ppx4_9c0a2f04-6b3e-5f2a-8470-43e49364ba52"
 PPX_ARGS = [
     # do not sort (buildifier)
@@ -58,7 +58,7 @@ ocaml_archive(
 ocaml_module(
     name = "snark_ffi_bindings.cm_",
     src  = "//src/camlsnark_c:libsnark_ffi_bindings_ml",  ## generated file
-    ns_module = ":snarky_libsnark_bindings_ns_module",
+    ns = ":snarky_libsnark_bindings_ns_module",
     opts = IMPL_OPTS + ["-thread"],
     visibility = ["//visibility:public"],
     deps = [
@@ -68,7 +68,7 @@ ocaml_module(
     ],
 )
 
-ocaml_ns_module(
+ocaml_ns(
     name = "snarky_libsnark_bindings_ns_module",
     ns = SNARKY_LIBSNARK_BINDINGS_NS,
     submodules = [
@@ -83,7 +83,7 @@ ocaml_ns_module(
 ocaml_module(
     name = "libsnark_r1cs_constraint_system.cm_",
     src  = "libsnark_r1cs_constraint_system.ml",
-    ns_module = ":snarky_libsnark_bindings_ns_module",
+    ns = ":snarky_libsnark_bindings_ns_module",
     opts = IMPL_OPTS,
     ppx = PPX4_9C0A2F04,
     ppx_args = PPX_ARGS,
@@ -100,7 +100,7 @@ ocaml_module(
 ocaml_module(
     name = "libsnark.cm_",
     src  = "libsnark.ml",
-    ns_module = ":snarky_libsnark_bindings_ns_module",
+    ns = ":snarky_libsnark_bindings_ns_module",
     opts = IMPL_OPTS + ["-cclib", "-Wl,-E", "-linkall"],
     ppx = PPX4_9C0A2F04,
     ppx_args = PPX_ARGS,

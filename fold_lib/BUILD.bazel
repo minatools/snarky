@@ -4,16 +4,11 @@ load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_archive",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 load(
     "//:BUILD.bzl",
-    "GLOBAL_ARCHIVE_OPTS",
-    "GLOBAL_MODULE_OPTS",
-    "GLOBAL_NS_MODULE_OPTS",
-)
-load(
-    "//snarky:BUILD.bzl",
     "REPO_ARCHIVE_OPTS",
     "REPO_MODULE_OPTS",
     "REPO_NS_MODULE_OPTS",
@@ -26,28 +21,29 @@ load(
 )
 
 ################################################################
-## STANZA 1: FOLD_LIB
+## STANZA 1: LIBRARY FOLD_LIB
 ################################################################
-FOLD_LIB_ARCHIVE_OPTS = GLOBAL_ARCHIVE_OPTS + REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + ["-linkall"]
+FOLD_LIB_MODULE_OPTS = REPO_MODULE_OPTS + PKG_MODULE_OPTS
 
-FOLD_LIB_MODULE_OPTS = GLOBAL_MODULE_OPTS + REPO_MODULE_OPTS + PKG_MODULE_OPTS + []
+FOLD_LIB_ARCHIVE_OPTS = REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + ["-linkall"]
 
-FOLD_LIB_NS_MODULE_OPTS = []
+FOLD_LIB_NS_MODULE_OPTS = REPO_NS_MODULE_OPTS + PKG_NS_MODULE_OPTS
 
 FOLD_LIB_DEPS = [
     # do not sort (buildifier)
     "@opam//pkg:core_kernel",
 ]
 
-FOLD_LIB_PPX = "@//bzl/ppx:ppx[ppx_jane][ppx_deriving.eq][bisect_ppx]"
+FOLD_LIB_PPX = "@//bzl/ppx:ppx.exe[ppx_jane][ppx_deriving.eq][bisect_ppx]"
 
 FOLD_LIB_PPX_ARGS = [
     # do not sort (buildifier)
+    "--conditional",
     "-inline-test-lib",
     "fold_lib",
-    "-conditional",
 ]
 
+##############
 ocaml_archive(
     name = "fold_lib",
     doc = "fold types",
@@ -55,11 +51,12 @@ ocaml_archive(
     visibility = ["//visibility:public"],
     deps = FOLD_LIB_DEPS + [
         # do not sort (buildifier)
-        ":Fold",
+        ":_Fold",
     ],
 )
 
-ocaml_ns_module(
+#########
+ocaml_ns(
     name = "Fold_lib_ns",
     ns = "fold_lib",
     opts = FOLD_LIB_NS_MODULE_OPTS,
@@ -69,19 +66,28 @@ ocaml_ns_module(
     ],
 )
 
+#############
 ocaml_module(
-    name = "Fold",
+    name = "_Fold",
     src = "fold.ml",
-    ns_module = ":Fold_lib_ns",
+    ns = ":Fold_lib_ns",
     opts = FOLD_LIB_MODULE_OPTS,
     ppx = FOLD_LIB_PPX,
     ppx_args = FOLD_LIB_PPX_ARGS,
     deps = FOLD_LIB_DEPS,
 )
 
-################################################################
-#### Package CLI Options
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+###################################################################
+######## Configuration Settings - see :BUILD.bzl #################
+bool_flag(
+    name = "always-link",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_always_link",
+    flag_values = {":always-link": str(True)},
+)
 
 bool_flag(
     name = "debug",
@@ -94,6 +100,26 @@ config_setting(
 )
 
 bool_flag(
+    name = "threads",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "enable_threads",
+    flag_values = {":threads": str(True)},
+)
+
+bool_flag(
+    name = "tooling",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_tooling",
+    flag_values = {":tooling": str(True)},
+)
+
+bool_flag(
     name = "verbose",
     build_setting_default = False,
 )
@@ -101,4 +127,24 @@ bool_flag(
 config_setting(
     name = "enable_verbose",
     flag_values = {":verbose": str(True)},
+)
+
+## PPX control
+string_flag(
+    name = "ppx-out",
+    build_setting_default = "binary",
+    values = [
+        "binary",
+        "text",
+    ],
+)
+
+config_setting(
+    name = "enable_ppx_output_format_text",
+    flag_values = {":ppx-out": "text"},
+)
+
+config_setting(
+    name = "enable_ppx_output_format_binary",
+    flag_values = {":ppx-out": "binary"},
 )

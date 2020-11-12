@@ -5,17 +5,11 @@ load(
     "ocaml_archive",
     "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns_module",
+    "ocaml_ns",
 )
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 load(
     "//:BUILD.bzl",
-    "GLOBAL_ARCHIVE_OPTS",
-    "GLOBAL_INTERFACE_OPTS",
-    "GLOBAL_MODULE_OPTS",
-    "GLOBAL_NS_MODULE_OPTS",
-)
-load(
-    "//snarky:BUILD.bzl",
     "REPO_ARCHIVE_OPTS",
     "REPO_INTERFACE_OPTS",
     "REPO_MODULE_OPTS",
@@ -30,15 +24,15 @@ load(
 )
 
 ################################################################
-## STANZA 1: GROUP_MAP
+## STANZA 1: LIBRARY GROUP_MAP
 ################################################################
-GROUP_MAP_ARCHIVE_OPTS = GLOBAL_ARCHIVE_OPTS + REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + []
+GROUP_MAP_INTERFACE_OPTS = REPO_INTERFACE_OPTS + PKG_INTERFACE_OPTS
 
-GROUP_MAP_INTERFACE_OPTS = []
+GROUP_MAP_MODULE_OPTS = REPO_MODULE_OPTS + PKG_MODULE_OPTS
 
-GROUP_MAP_MODULE_OPTS = GLOBAL_MODULE_OPTS + REPO_MODULE_OPTS + PKG_MODULE_OPTS + []
+GROUP_MAP_ARCHIVE_OPTS = REPO_ARCHIVE_OPTS + PKG_ARCHIVE_OPTS + []
 
-GROUP_MAP_NS_MODULE_OPTS = []
+GROUP_MAP_NS_MODULE_OPTS = REPO_NS_MODULE_OPTS + PKG_NS_MODULE_OPTS
 
 GROUP_MAP_DEPS = [
     # do not sort (buildifier)
@@ -46,7 +40,7 @@ GROUP_MAP_DEPS = [
     "@snarky//snarkette",
 ]
 
-GROUP_MAP_PPX = "@//bzl/ppx:ppx[ppx_jane][ppx_deriving.eq]"
+GROUP_MAP_PPX = "@//bzl/ppx:ppx.exe[ppx_jane][ppx_deriving.eq]"
 
 GROUP_MAP_PPX_ARGS = [
     # do not sort (buildifier)
@@ -54,19 +48,21 @@ GROUP_MAP_PPX_ARGS = [
     "group_map",
 ]
 
+##############
 ocaml_archive(
     name = "group_map",
     opts = GROUP_MAP_ARCHIVE_OPTS,
     visibility = ["//visibility:public"],
     deps = GROUP_MAP_DEPS + [
         # do not sort (buildifier)
-        ":Bw19",
-        ":Field_intf",
-        ":Group_map",
+        ":_Bw19",
+        ":_Field_intf",
+        ":_Group_map",
     ],
 )
 
-ocaml_ns_module(
+#########
+ocaml_ns(
     name = "Group_map_ns",
     ns = "group_map",
     opts = GROUP_MAP_NS_MODULE_OPTS,
@@ -78,61 +74,73 @@ ocaml_ns_module(
     ],
 )
 
+#############
 ocaml_module(
-    name = "Bw19",
+    name = "_Bw19",
     src = "bw19.ml",
-    ns_module = ":Group_map_ns",
+    ns = ":Group_map_ns",
     opts = GROUP_MAP_MODULE_OPTS,
     ppx = GROUP_MAP_PPX,
     ppx_args = GROUP_MAP_PPX_ARGS,
     deps = GROUP_MAP_DEPS + [
         # do not sort (buildifier)
-        ":Field_intf",
+        ":_Field_intf",
     ],
 )
 
+#############
 ocaml_module(
-    name = "Field_intf",
+    name = "_Field_intf",
     src = "field_intf.ml",
-    ns_module = ":Group_map_ns",
+    ns = ":Group_map_ns",
     opts = GROUP_MAP_MODULE_OPTS,
     ppx = GROUP_MAP_PPX,
     ppx_args = GROUP_MAP_PPX_ARGS,
     deps = GROUP_MAP_DEPS,
 )
 
+#############
 ocaml_module(
-    name = "Group_map",
+    name = "_Group_map",
     src = "group_map.ml",
-    intf = ":_Group_map",
-    ns_module = ":Group_map_ns",
+    intf = ":_Group_map.cmi",
+    ns = ":Group_map_ns",
     opts = GROUP_MAP_MODULE_OPTS,
     ppx = GROUP_MAP_PPX,
     ppx_args = GROUP_MAP_PPX_ARGS,
     deps = GROUP_MAP_DEPS + [
         # do not sort (buildifier)
-        ":Bw19",
-        ":Field_intf",
+        ":_Bw19",
+        ":_Field_intf",
     ],
 )
 
+################
 ocaml_interface(
-    name = "_Group_map",
+    name = "_Group_map.cmi",
     src = "group_map.mli",
-    ns_module = ":Group_map_ns",
+    ns = ":Group_map_ns",
     opts = GROUP_MAP_INTERFACE_OPTS,
     ppx = GROUP_MAP_PPX,
     ppx_args = GROUP_MAP_PPX_ARGS,
     deps = GROUP_MAP_DEPS + [
         # do not sort (buildifier)
-        ":Bw19",
-        ":Field_intf",
+        ":_Bw19",
+        ":_Field_intf",
     ],
 )
 
-################################################################
-#### Package CLI Options
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+###################################################################
+######## Configuration Settings - see :BUILD.bzl #################
+bool_flag(
+    name = "always-link",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_always_link",
+    flag_values = {":always-link": str(True)},
+)
 
 bool_flag(
     name = "debug",
@@ -145,6 +153,26 @@ config_setting(
 )
 
 bool_flag(
+    name = "threads",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "enable_threads",
+    flag_values = {":threads": str(True)},
+)
+
+bool_flag(
+    name = "tooling",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "enable_tooling",
+    flag_values = {":tooling": str(True)},
+)
+
+bool_flag(
     name = "verbose",
     build_setting_default = False,
 )
@@ -152,4 +180,24 @@ bool_flag(
 config_setting(
     name = "enable_verbose",
     flag_values = {":verbose": str(True)},
+)
+
+## PPX control
+string_flag(
+    name = "ppx-out",
+    build_setting_default = "binary",
+    values = [
+        "binary",
+        "text",
+    ],
+)
+
+config_setting(
+    name = "enable_ppx_output_format_text",
+    flag_values = {":ppx-out": "text"},
+)
+
+config_setting(
+    name = "enable_ppx_output_format_binary",
+    flag_values = {":ppx-out": "binary"},
 )
