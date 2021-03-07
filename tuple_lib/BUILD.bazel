@@ -1,11 +1,10 @@
-## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
-
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_archive",
-    "ocaml_interface",
+    "ocaml_signature",
     "ocaml_module",
-    "ocaml_ns",
+    "ocaml_ns_archive",
+    "ocaml_ns_library",
 )
 
 PPX_PRINT = "@ppx//print:binary"
@@ -13,13 +12,13 @@ PPX_PRINT = "@ppx//print:binary"
 ################################################################
 ## STANZA 1: LIBRARY TUPLE_LIB
 ################################################################
-TUPLE_LIB_INTERFACE_OPTS = []
+TUPLE_LIB_SIGNATURE_OPTS = []
 
 TUPLE_LIB_MODULE_OPTS = []
 
-TUPLE_LIB_DEPS = [
+TUPLE_LIB_DEPS_OPAM = [
     # do not sort (buildifier)
-    "@opam//pkg:core_kernel",
+    "core_kernel",
 ]
 
 TUPLE_LIB_PPX = "@//bzl/ppx/exe:ppx_jane__ppx_deriving.eq"
@@ -30,61 +29,43 @@ TUPLE_LIB_PPX_ARGS = [
     "tuple_lib",
 ]
 
-##############
-ocaml_archive(
-    name = "tuple_lib",
-    doc = "Tuple types",
-    opts = [],
-    visibility = ["//visibility:public"],
-    deps = TUPLE_LIB_DEPS + [
-        # do not sort (buildifier)
-        ":_Double",
-        ":_Four",
-        ":_Intf",
-        ":_Quadruple",
-        ":_Triple",
-        ":_Tuple_lib",
-    ],
-)
-
 #########
-ocaml_ns(
-    name = "Tuple_lib_ns",
-    ns = "tuple_lib",
-    opts = [],
-    submodules = [
-        # do not sort (buildifier)
-        "double.ml",
-        "four.ml",
-        "intf.ml",
-        "quadruple.ml",
-        "triple.ml",
-        "tuple_lib.ml",
-    ],
+ocaml_ns_library(
+    name = "tuple_lib",
+    main = ":_Tuple_lib",
+    submodules = {
+        ":_Double": "Double",
+        ":_Four": "Four",
+        ":_Intf": "Intf",
+        ":_Quadruple": "Quadruple",
+        ":_Triple": "Triple",
+        ":_Tuple_lib": "Tuple_lib",
+    },
+    visibility = [
+        "//visibility:public"
+    ]
 )
 
 #############
 ocaml_module(
     name = "_Double",
-    src = "double.ml",
-    intf = ":_Double.cmi",
-    ns = ":Tuple_lib_ns",
+    struct = "double.ml",
+    sig  = ":_Double.cmi",
     opts = TUPLE_LIB_MODULE_OPTS,
     ppx = TUPLE_LIB_PPX,
     ppx_args = TUPLE_LIB_PPX_ARGS,
-    ppx_print = PPX_PRINT,      # obazl:retain
-    deps = TUPLE_LIB_DEPS,
+    ppx_print = PPX_PRINT,  # obazl:retain
+    deps_opam = TUPLE_LIB_DEPS_OPAM,
 )
 
-################
-ocaml_interface(
+ocaml_signature(
     name = "_Double.cmi",
     src = "double.mli",
-    ns = ":Tuple_lib_ns",
-    opts = TUPLE_LIB_INTERFACE_OPTS,
+    opts = TUPLE_LIB_SIGNATURE_OPTS,
     ppx = TUPLE_LIB_PPX,
     ppx_args = TUPLE_LIB_PPX_ARGS,
-    deps = TUPLE_LIB_DEPS + [
+    deps_opam = TUPLE_LIB_DEPS_OPAM,
+	deps = [
         # do not sort (buildifier)
         ":_Intf",
     ],
@@ -93,12 +74,12 @@ ocaml_interface(
 #############
 ocaml_module(
     name = "_Four",
-    src = "four.ml",
-    ns = ":Tuple_lib_ns",
     opts = TUPLE_LIB_MODULE_OPTS,
     ppx = TUPLE_LIB_PPX,
     ppx_args = TUPLE_LIB_PPX_ARGS,
-    deps = TUPLE_LIB_DEPS + [
+    struct = "four.ml",
+    deps_opam = TUPLE_LIB_DEPS_OPAM,
+	deps = [
         # do not sort (buildifier)
         ":_Double",
     ],
@@ -107,39 +88,38 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Intf",
-    src = "intf.ml",
-    ns = ":Tuple_lib_ns",
     opts = TUPLE_LIB_MODULE_OPTS,
     ppx = TUPLE_LIB_PPX,
     ppx_args = TUPLE_LIB_PPX_ARGS,
-    deps = TUPLE_LIB_DEPS,
+    struct = "intf.ml",
+    deps_opam = TUPLE_LIB_DEPS_OPAM,
 )
 
 #############
 ocaml_module(
     name = "_Quadruple",
-    src = "quadruple.ml",
-    intf = ":_Quadruple.cmi",
-    ns = ":Tuple_lib_ns",
+    sig  = ":_Quadruple.cmi",
     opts = TUPLE_LIB_MODULE_OPTS,
     ppx = TUPLE_LIB_PPX,
     ppx_args = TUPLE_LIB_PPX_ARGS,
-    ppx_print = PPX_PRINT,      # obazl:retain
-    deps = TUPLE_LIB_DEPS + [
+    ppx_print = PPX_PRINT,  # obazl:retain
+    struct = "quadruple.ml",
+    deps_opam = TUPLE_LIB_DEPS_OPAM,
+	deps = [
         # do not sort (buildifier)
         ":_Four",
     ],
 )
 
 ################
-ocaml_interface(
+ocaml_signature(
     name = "_Quadruple.cmi",
     src = "quadruple.mli",
-    ns = ":Tuple_lib_ns",
-    opts = TUPLE_LIB_INTERFACE_OPTS,
+    opts = TUPLE_LIB_SIGNATURE_OPTS,
     ppx = TUPLE_LIB_PPX,
     ppx_args = TUPLE_LIB_PPX_ARGS,
-    deps = TUPLE_LIB_DEPS + [
+    deps_opam = TUPLE_LIB_DEPS_OPAM,
+	deps = [
         # do not sort (buildifier)
         ":_Four",
         ":_Intf",
@@ -149,25 +129,24 @@ ocaml_interface(
 #############
 ocaml_module(
     name = "_Triple",
-    src = "triple.ml",
-    intf = ":_Triple.cmi",
-    ns = ":Tuple_lib_ns",
+    sig  = ":_Triple.cmi",
     opts = TUPLE_LIB_MODULE_OPTS,
     ppx = TUPLE_LIB_PPX,
     ppx_args = TUPLE_LIB_PPX_ARGS,
-    ppx_print = PPX_PRINT,      # obazl:retain
-    deps = TUPLE_LIB_DEPS,
+    ppx_print = PPX_PRINT,  # obazl:retain
+    struct = "triple.ml",
+    deps_opam = TUPLE_LIB_DEPS_OPAM,
 )
 
 ################
-ocaml_interface(
+ocaml_signature(
     name = "_Triple.cmi",
     src = "triple.mli",
-    ns = ":Tuple_lib_ns",
-    opts = TUPLE_LIB_INTERFACE_OPTS,
+    opts = TUPLE_LIB_SIGNATURE_OPTS,
     ppx = TUPLE_LIB_PPX,
     ppx_args = TUPLE_LIB_PPX_ARGS,
-    deps = TUPLE_LIB_DEPS + [
+    deps_opam = TUPLE_LIB_DEPS_OPAM,
+	deps = [
         # do not sort (buildifier)
         ":_Intf",
     ],
@@ -176,12 +155,12 @@ ocaml_interface(
 #############
 ocaml_module(
     name = "_Tuple_lib",
-    src = "tuple_lib.ml",
-    ns = ":Tuple_lib_ns",
     opts = TUPLE_LIB_MODULE_OPTS,
     ppx = TUPLE_LIB_PPX,
     ppx_args = TUPLE_LIB_PPX_ARGS,
-    deps = TUPLE_LIB_DEPS + [
+    struct = "tuple_lib.ml",
+    deps_opam = TUPLE_LIB_DEPS_OPAM,
+	deps = [
         # do not sort (buildifier)
         ":_Double",
         ":_Four",

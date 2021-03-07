@@ -1,119 +1,62 @@
-## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
-
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
-    "ppx_archive",
+    # "ppx_archive",
     "ppx_executable",
     "ppx_module",
-    "ppx_ns",
 )
 
-################################################################
-## PPX STANZA 1: PPX_SNARKY
-################################################################
-PPX_SNARKY_PPX_MODULE_OPTS = []
-
-PPX_SNARKY_DEPS = [
+PPX_SNARKY_DEPS_OPAM = [
     # do not sort (buildifier)
-    "@opam//pkg:ppxlib",
-    "@opam//pkg:ppx_tools",
-    "@opam//pkg:core_kernel",
+    "ppxlib",
+    "ppx_tools",
+    "core_kernel",
 ]
-
-PPX_SNARKY_PPX_ARGS = [
-    # do not sort (buildifier)
-]
-
-############
-ppx_archive(
-    name = "ppx_snarky",
-    opts = [],
-    visibility = ["//visibility:public"],
-    deps = PPX_SNARKY_DEPS + [
-        # do not sort (buildifier)
-        ":Ppx_snarky",
-        ":Snarky_module",
-        ":Snarkydef",
-    ],
-)
-
-#########
-ppx_ns(
-    name = "Ppx_snarky_ns",
-    ns = "ppx_snarky",
-    opts = [],
-    submodules = [
-        # do not sort (buildifier)
-        "ppx_snarky.ml",
-        "snarky_module.ml",
-        "snarkydef.ml",
-    ],
-)
 
 ###########
 ppx_module(
-    name = "Ppx_snarky",
-    src = "ppx_snarky.ml",
-    ns = ":Ppx_snarky_ns",
-    opts = PPX_SNARKY_PPX_MODULE_OPTS,
+    name = "ppx_snarky",
+    deps_opam = PPX_SNARKY_DEPS_OPAM,
+    # ns_env = ":_ns_env",
     ppx = ":ppx1.exe",
-    ppx_args = PPX_SNARKY_PPX_ARGS,
+    struct = "ppx_snarky.ml",
     deps = [
         # do not sort (buildifier)
-        "@opam//pkg:ppxlib",
-        "@opam//pkg:ppx_tools",
-        "@opam//pkg:core_kernel",
-        "Snarky_module",
-        "Snarkydef",
+        ":Snarky_module",
+        ":Snarkydef",
     ],
+    visibility = ["//visibility:public"],
 )
 
 ###########
 ppx_module(
     name = "Snarky_module",
-    src = "snarky_module.ml",
-    ns = ":Ppx_snarky_ns",
-    opts = PPX_SNARKY_PPX_MODULE_OPTS,
+    deps_opam = PPX_SNARKY_DEPS_OPAM,
+    # ns_env = ":_ns_env",
     ppx = ":ppx1.exe",
-    ppx_args = PPX_SNARKY_PPX_ARGS,
-    deps = [
-        # do not sort (buildifier)
-        "@opam//pkg:ppxlib",
-        "@opam//pkg:ppx_tools",
-        "@opam//pkg:core_kernel",
-    ],
+    struct = "snarky_module.ml",
 )
 
 ###########
 ppx_module(
     name = "Snarkydef",
-    src = "snarkydef.ml",
-    ns = ":Ppx_snarky_ns",
-    opts = PPX_SNARKY_PPX_MODULE_OPTS,
+    struct = "snarkydef.ml",
+    # ns_env = ":_ns_env",
     ppx = ":ppx1.exe",
-    ppx_args = PPX_SNARKY_PPX_ARGS,
-    deps = [
-        # do not sort (buildifier)
-        "@opam//pkg:ppxlib",
-        "@opam//pkg:ppx_tools",
-        "@opam//pkg:core_kernel",
-    ],
+    deps_opam = PPX_SNARKY_DEPS_OPAM,
 )
 
 ###############
 ppx_executable(
     name = "ppx1.exe",
-    lazy_deps = [
-        "@opam//pkg:ppx_sexp_conv.runtime-lib",
+    deps_adjunct_opam = [
+        "ppx_sexp_conv.runtime-lib",
     ],
-    main = "//bzl/ppx/exe:Driver",
-    opts = [],
+    deps_opam = [
+        "ppxlib.metaquot",
+        "ppx_sexp_conv"
+    ],
+    main = "//bzl/ppx/exe:ppxlib_driver",
     visibility = [
         "//ppx:__pkg__",
-    ],
-    deps = [
-        "@opam//pkg:ppx_sexp_conv",
-        "@opam//pkg:ppxlib",
-        "@opam//pkg:ppxlib.metaquot",
     ],
 )

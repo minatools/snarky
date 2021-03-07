@@ -1,26 +1,18 @@
-## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
+## BROKEN: depends on obsolete Snarky
 
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
-    "ocaml_archive",
-    "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns",
+    "ocaml_ns_library",
+    "ocaml_signature",
     "ppx_executable",
 )
 
 ################################################################
 ## STANZA 1: LIBRARY SNARKY_UNIVERSE
 ################################################################
-SNARKY_UNIVERSE_INTERFACE_OPTS = []
-
-SNARKY_UNIVERSE_MODULE_OPTS = []
-
-SNARKY_UNIVERSE_PPX_EXECUTABLE_OPTS = []
-
 SNARKY_UNIVERSE_DEPS = [
     # do not sort (buildifier)
-    "@opam//pkg:core",
     "@snarky//sponge",
     "@snarky//snarkette",
     "@snarky//snarky_integer",
@@ -29,48 +21,48 @@ SNARKY_UNIVERSE_DEPS = [
     "@snarky//src/intf:snarky_intf",
 ]
 
+SNARKY_UNIVERSE_DEPS_OPAM = [
+    "core",
+]
+
 ##############
-ocaml_archive(
-    name = "snarky_universe",
-    opts = [],
-    visibility = ["//visibility:public"],
-    deps = SNARKY_UNIVERSE_DEPS + [
-        # do not sort (buildifier)
-        ":_Curve",
-        ":_Group",
-        ":_Hash",
-        ":_Input_spec",
-        ":_Intf",
-        ":_Membership_proof",
-        ":_Merkle_tree_unchecked",
-        ":_Snarky_universe",
-    ],
-)
+# ocaml_archive(
+#     name = "snarky_universe",
+#     opts = [],
+#     visibility = ["//visibility:public"],
+#     deps = SNARKY_UNIVERSE_DEPS + [
+#         # do not sort (buildifier)
+#         ":_Curve",
+#         ":_Group",
+#         ":_Hash",
+#         ":_Input_spec",
+#         ":_Intf",
+#         ":_Membership_proof",
+#         ":_Merkle_tree_unchecked",
+#         ":_Snarky_universe",
+#     ],
+#     deps_opam = SNARKY_UNIVERSE_DEPS_OPAM
+# )
 
 #########
-ocaml_ns(
-    name = "Snarky_universe_ns",
-    ns = "snarky_universe",
-    opts = [],
-    submodules = [
-        # do not sort (buildifier)
-        "curve.ml",
-        "group.ml",
-        "hash.ml",
-        "input_spec.ml",
-        "intf.ml",
-        "membership_proof.ml",
-        "merkle_tree_unchecked.ml",
-        "snarky_universe.ml",
-    ],
+ocaml_ns_library(
+    name = "snarky_universe",
+    submodules = {
+        ":_Curve": "Curve",
+        ":_Group": "Group",
+        ":_Hash": "Hash",
+        ":_Input_spec": "Input_spec",
+        ":_Intf": "Intf",
+        ":_Membership_proof": "Membership_proof",
+        ":_Merkle_tree_unchecked": "Merkle_tree_unchecked",
+        ":_Snarky_universe": "Snarky_universe",
+    }
 )
 
 #############
 ocaml_module(
     name = "_Curve",
-    src = "curve.ml",
-    ns = ":Snarky_universe_ns",
-    opts = SNARKY_UNIVERSE_MODULE_OPTS,
+    struct = "curve.ml",
     ppx = ":ppx1.exe",
     ppx_args = [
         # do not sort (buildifier)
@@ -78,14 +70,13 @@ ocaml_module(
         "snarky_universe",
     ],
     deps = SNARKY_UNIVERSE_DEPS,
+    deps_opam = SNARKY_UNIVERSE_DEPS_OPAM,
 )
 
 #############
 ocaml_module(
     name = "_Group",
-    src = "group.ml",
-    ns = ":Snarky_universe_ns",
-    opts = SNARKY_UNIVERSE_MODULE_OPTS,
+    struct = "group.ml",
     ppx = ":ppx1.exe",
     ppx_args = [
         # do not sort (buildifier)
@@ -96,14 +87,13 @@ ocaml_module(
         # do not sort (buildifier)
         ":_Curve",
     ],
+    deps_opam = SNARKY_UNIVERSE_DEPS_OPAM,
 )
 
 #############
 ocaml_module(
     name = "_Hash",
-    src = "hash.ml",
-    ns = ":Snarky_universe_ns",
-    opts = SNARKY_UNIVERSE_MODULE_OPTS,
+    struct = "hash.ml",
     ppx = ":ppx1.exe",
     ppx_args = [
         # do not sort (buildifier)
@@ -114,14 +104,13 @@ ocaml_module(
         # do not sort (buildifier)
         ":_Curve",
     ],
+    deps_opam = SNARKY_UNIVERSE_DEPS_OPAM,
 )
 
 #############
 ocaml_module(
     name = "_Input_spec",
-    src = "input_spec.ml",
-    ns = ":Snarky_universe_ns",
-    opts = SNARKY_UNIVERSE_MODULE_OPTS,
+    struct = "input_spec.ml",
     ppx = ":ppx1.exe",
     ppx_args = [
         # do not sort (buildifier)
@@ -129,14 +118,13 @@ ocaml_module(
         "snarky_universe",
     ],
     deps = SNARKY_UNIVERSE_DEPS,
+    deps_opam = SNARKY_UNIVERSE_DEPS_OPAM
 )
 
 #############
 ocaml_module(
     name = "_Intf",
-    src = "intf.ml",
-    ns = ":Snarky_universe_ns",
-    opts = SNARKY_UNIVERSE_MODULE_OPTS,
+    struct = "intf.ml",
     ppx = ":ppx1.exe",
     ppx_args = [
         # do not sort (buildifier)
@@ -147,14 +135,13 @@ ocaml_module(
         # do not sort (buildifier)
         ":_Input_spec",
     ],
+    deps_opam = SNARKY_UNIVERSE_DEPS_OPAM
 )
 
 #############
 ocaml_module(
     name = "_Membership_proof",
-    src = "membership_proof.ml",
-    ns = ":Snarky_universe_ns",
-    opts = SNARKY_UNIVERSE_MODULE_OPTS,
+    struct = "membership_proof.ml",
     ppx = ":ppx1.exe",
     ppx_args = [
         # do not sort (buildifier)
@@ -163,14 +150,13 @@ ocaml_module(
     ],
     ppx_print = "@ppx//print:binary",
     deps = SNARKY_UNIVERSE_DEPS,
+    deps_opam = SNARKY_UNIVERSE_DEPS_OPAM
 )
 
 #############
 ocaml_module(
     name = "_Merkle_tree_unchecked",
-    src = "merkle_tree_unchecked.ml",
-    ns = ":Snarky_universe_ns",
-    opts = SNARKY_UNIVERSE_MODULE_OPTS,
+    struct = "merkle_tree_unchecked.ml",
     ppx = ":ppx1.exe",
     ppx_args = [
         # do not sort (buildifier)
@@ -181,15 +167,14 @@ ocaml_module(
         # do not sort (buildifier)
         ":_Membership_proof",
     ],
+    deps_opam = SNARKY_UNIVERSE_DEPS_OPAM
 )
 
 #############
 ocaml_module(
     name = "_Snarky_universe",
-    src = "snarky_universe.ml",
-    intf = ":_Snarky_universe.cmi",
-    ns = ":Snarky_universe_ns",
-    opts = SNARKY_UNIVERSE_MODULE_OPTS,
+    struct = "snarky_universe.ml",
+    sig  = ":_Snarky_universe.cmi",
     ppx = ":ppx1.exe",
     ppx_args = [
         # do not sort (buildifier)
@@ -206,14 +191,13 @@ ocaml_module(
         ":_Membership_proof",
         ":_Merkle_tree_unchecked",
     ],
+    deps_opam = SNARKY_UNIVERSE_DEPS_OPAM
 )
 
 ################
-ocaml_interface(
+ocaml_signature(
     name = "_Snarky_universe.cmi",
-    src = "snarky_universe.mli",
-    ns = ":Snarky_universe_ns",
-    opts = SNARKY_UNIVERSE_INTERFACE_OPTS,
+    src  = "snarky_universe.mli",
     ppx = ":ppx1.exe",
     ppx_args = [
         # do not sort (buildifier)
@@ -225,34 +209,35 @@ ocaml_interface(
         ":_Curve",
         ":_Intf",
     ],
+    deps_opam = SNARKY_UNIVERSE_DEPS_OPAM
 )
 
 ###############
 ppx_executable(
     name = "ppx1.exe",
-    lazy_deps = [
-        "@opam//pkg:ppx_expect.collector",
-        "@opam//pkg:yojson",
-        "@opam//pkg:ppx_hash.runtime-lib",
-        "@opam//pkg:ppx_deriving_yojson.runtime",
-        "@opam//pkg:ppx_sexp_conv.runtime-lib",
-        "@opam//pkg:ppx_deriving.runtime",
-        "@opam//pkg:ppx_assert.runtime-lib",
-        "@opam//pkg:ppx_compare.runtime-lib",
-        "@opam//pkg:ppx_inline_test.runtime-lib",
-        "@opam//pkg:ppx_bench.runtime-lib",
-        "@opam//pkg:ppx_enumerate.runtime-lib",
-        "@opam//pkg:ppx_module_timer.runtime",
+    deps_adjunct_opam = [
+        "ppx_expect.collector",
+        "yojson",
+        "ppx_hash.runtime-lib",
+        "ppx_deriving_yojson.runtime",
+        "ppx_sexp_conv.runtime-lib",
+        "ppx_deriving.runtime",
+        "ppx_assert.runtime-lib",
+        "ppx_compare.runtime-lib",
+        "ppx_inline_test.runtime-lib",
+        "ppx_bench.runtime-lib",
+        "ppx_enumerate.runtime-lib",
+        "ppx_module_timer.runtime",
     ],
-    main = "//bzl/ppx/exe:Driver",
+    main = "//bzl/ppx/exe:ppxlib_driver",
     opts = [],
     visibility = [
         "//snarky_universe:__pkg__",
     ],
-    deps = [
-        "@opam//pkg:ppx_deriving.eq",
-        "@opam//pkg:ppx_deriving_yojson",
-        "@opam//pkg:ppx_jane",
-        "@opam//pkg:ppxlib",
+    deps_opam = [
+        "ppx_deriving.eq",
+        "ppx_deriving_yojson",
+        "ppx_jane",
+        "ppxlib",
     ],
 )

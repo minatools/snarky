@@ -32,7 +32,6 @@ ocaml_archive(
 ocaml_ns(
     name = "Ctypes_foreign_libffi_ns",
     ns = "ctypes_foreign_libffi",
-    opts = [],
     submodules = [
         # do not sort (buildifier)
         "ctypes_foreign.ml",

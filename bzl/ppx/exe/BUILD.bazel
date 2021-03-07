@@ -3,19 +3,22 @@ load("@obazl_rules_ocaml//ocaml:rules.bzl", "ppx_executable", "ppx_module")
 ###############
 ppx_executable(
     name = "ppx_jane",
-    lazy_deps = [
-        "@opam//pkg:ppx_expect.collector",
-        "@opam//pkg:ppx_hash.runtime-lib",
-        "@opam//pkg:ppx_sexp_conv.runtime-lib",
-        "@opam//pkg:ppx_assert.runtime-lib",
-        "@opam//pkg:ppx_compare.runtime-lib",
-        "@opam//pkg:ppx_inline_test.runtime-lib",
-        "@opam//pkg:ppx_bench.runtime-lib",
-        "@opam//pkg:ppx_enumerate.runtime-lib",
-        "@opam//pkg:ppx_module_timer.runtime",
+    deps_adjunct_opam = [
+        "ppx_expect.collector",
+        "ppx_hash.runtime-lib",
+        "ppx_sexp_conv.runtime-lib",
+        "ppx_assert.runtime-lib",
+        "ppx_compare.runtime-lib",
+        "ppx_inline_test.runtime-lib",
+        "ppx_bench.runtime-lib",
+        "ppx_enumerate.runtime-lib",
+        "ppx_module_timer.runtime",
     ],
-    main = ":Driver",
-    opts = [],
+    deps_opam = [
+        "ppx_jane",
+        "ppxlib",
+    ],
+    main = ":ppxlib_driver",
     visibility = [
         "//app/reformat-snarky:__pkg__",
         "//examples/merkle_update:__pkg__",
@@ -23,43 +26,43 @@ ppx_executable(
         "//meja/src:__pkg__",
         "//src/camlsnark_c/groth16_gpu_prover/test:__pkg__",
     ],
-    deps = [
-        "@opam//pkg:ppx_jane",
-        "@opam//pkg:ppxlib",
-    ],
 )
 
 ###############
 ppx_executable(
     name = "ppxlib.metaquot",
-    main = ":Driver",
-    opts = [],
+    deps_opam = [
+        "ppxlib",
+        "ppxlib.metaquot",
+    ],
+    main = ":ppxlib_driver",
     visibility = [
         "//h_list/ppx:__pkg__",
         "//meja/ocaml:__pkg__",
-    ],
-    deps = [
-        "@opam//pkg:ppxlib",
-        "@opam//pkg:ppxlib.metaquot",
     ],
 )
 
 ###############
 ppx_executable(
     name = "ppx_jane__ppx_deriving.enum",
-    lazy_deps = [
-        "@opam//pkg:ppx_expect.collector",
-        "@opam//pkg:ppx_hash.runtime-lib",
-        "@opam//pkg:ppx_sexp_conv.runtime-lib",
-        "@opam//pkg:ppx_deriving.runtime",
-        "@opam//pkg:ppx_assert.runtime-lib",
-        "@opam//pkg:ppx_compare.runtime-lib",
-        "@opam//pkg:ppx_inline_test.runtime-lib",
-        "@opam//pkg:ppx_bench.runtime-lib",
-        "@opam//pkg:ppx_enumerate.runtime-lib",
-        "@opam//pkg:ppx_module_timer.runtime",
+    deps_adjunct_opam = [
+        "ppx_expect.collector",
+        "ppx_hash.runtime-lib",
+        "ppx_sexp_conv.runtime-lib",
+        "ppx_deriving.runtime",
+        "ppx_assert.runtime-lib",
+        "ppx_compare.runtime-lib",
+        "ppx_inline_test.runtime-lib",
+        "ppx_bench.runtime-lib",
+        "ppx_enumerate.runtime-lib",
+        "ppx_module_timer.runtime",
     ],
-    main = ":Driver",
+    deps_opam = [
+        "ppx_deriving.enum",
+        "ppx_jane",
+        "ppxlib",
+    ],
+    main = ":ppxlib_driver",
     opts = [],
     visibility = [
         "//examples/election:__pkg__",
@@ -67,29 +70,29 @@ ppx_executable(
         "//examples/elliptic_curve_operations:__pkg__",
         "//examples/imperative_test:__pkg__",
     ],
-    deps = [
-        "@opam//pkg:ppx_deriving.enum",
-        "@opam//pkg:ppx_jane",
-        "@opam//pkg:ppxlib",
-    ],
 )
 
 ###############
 ppx_executable(
     name = "ppx_jane__ppx_deriving.eq",
-    lazy_deps = [
-        "@opam//pkg:ppx_expect.collector",
-        "@opam//pkg:ppx_hash.runtime-lib",
-        "@opam//pkg:ppx_sexp_conv.runtime-lib",
-        "@opam//pkg:ppx_deriving.runtime",
-        "@opam//pkg:ppx_assert.runtime-lib",
-        "@opam//pkg:ppx_compare.runtime-lib",
-        "@opam//pkg:ppx_inline_test.runtime-lib",
-        "@opam//pkg:ppx_bench.runtime-lib",
-        "@opam//pkg:ppx_enumerate.runtime-lib",
-        "@opam//pkg:ppx_module_timer.runtime",
+    deps_adjunct_opam = [
+        "ppx_expect.collector",
+        "ppx_hash.runtime-lib",
+        "ppx_sexp_conv.runtime-lib",
+        "ppx_deriving.runtime",
+        "ppx_assert.runtime-lib",
+        "ppx_compare.runtime-lib",
+        "ppx_inline_test.runtime-lib",
+        "ppx_bench.runtime-lib",
+        "ppx_enumerate.runtime-lib",
+        "ppx_module_timer.runtime",
     ],
-    main = ":Driver",
+    deps_opam = [
+        "ppx_deriving.eq",
+        "ppx_jane",
+        "ppxlib",
+    ],
+    main = ":ppxlib_driver",
     opts = [],
     visibility = [
         "//bitstring_lib:__pkg__",
@@ -102,31 +105,32 @@ ppx_executable(
         "//sponge:__pkg__",
         "//tuple_lib:__pkg__",
     ],
-    deps = [
-        "@opam//pkg:ppx_deriving.eq",
-        "@opam//pkg:ppx_jane",
-        "@opam//pkg:ppxlib",
-    ],
 )
 
 ###############
 ppx_executable(
     name = "ppx_deriving_yojson__ppx_jane__ppx_deriving.std",
-    lazy_deps = [
-        "@opam//pkg:ppx_expect.collector",
-        "@opam//pkg:yojson",
-        "@opam//pkg:ppx_hash.runtime-lib",
-        "@opam//pkg:ppx_deriving_yojson.runtime",
-        "@opam//pkg:ppx_sexp_conv.runtime-lib",
-        "@opam//pkg:ppx_deriving.runtime",
-        "@opam//pkg:ppx_assert.runtime-lib",
-        "@opam//pkg:ppx_compare.runtime-lib",
-        "@opam//pkg:ppx_inline_test.runtime-lib",
-        "@opam//pkg:ppx_bench.runtime-lib",
-        "@opam//pkg:ppx_enumerate.runtime-lib",
-        "@opam//pkg:ppx_module_timer.runtime",
+    deps_adjunct_opam = [
+        "ppx_expect.collector",
+        "yojson",
+        "ppx_hash.runtime-lib",
+        "ppx_deriving_yojson.runtime",
+        "ppx_sexp_conv.runtime-lib",
+        "ppx_deriving.runtime",
+        "ppx_assert.runtime-lib",
+        "ppx_compare.runtime-lib",
+        "ppx_inline_test.runtime-lib",
+        "ppx_bench.runtime-lib",
+        "ppx_enumerate.runtime-lib",
+        "ppx_module_timer.runtime",
     ],
-    main = ":Driver",
+    deps_opam = [
+        "ppx_deriving.std",
+        "ppx_deriving_yojson",
+        "ppx_jane",
+        "ppxlib",
+    ],
+    main = ":ppxlib_driver",
     opts = [],
     visibility = [
         "//examples/anonvote:__pkg__",
@@ -137,21 +141,15 @@ ppx_executable(
         "//examples/sfbw/ex_preimage:__pkg__",
         "//examples/sfbw/ex_small_preimage:__pkg__",
     ],
-    deps = [
-        "@opam//pkg:ppx_deriving.std",
-        "@opam//pkg:ppx_deriving_yojson",
-        "@opam//pkg:ppx_jane",
-        "@opam//pkg:ppxlib",
-    ],
 )
 
 ################################################################
 ################################################################
 ppx_module(
-    name = "Driver",
-    src = ":ppxlib_driver.ml",
+    name = "ppxlib_driver",
+    deps_opam = ["ppxlib"],
+    struct = ":ppxlib_driver.ml",
     visibility = ["//visibility:public"],
-    deps = ["@opam//pkg:ppxlib"],
 )
 
 ########

@@ -1,11 +1,9 @@
-## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
-
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
-    "ocaml_archive",
-    "ocaml_interface",
+    "ocaml_signature",
     "ocaml_module",
-    "ocaml_ns",
+    "ocaml_ns_library",
+    "ocaml_ns_archive",
 )
 
 ################################################################
@@ -15,11 +13,8 @@ GROUP_MAP_INTERFACE_OPTS = []
 
 GROUP_MAP_MODULE_OPTS = []
 
-GROUP_MAP_DEPS = [
-    # do not sort (buildifier)
-    "@opam//pkg:core_kernel",
-    "@snarky//snarkette",
-]
+GROUP_MAP_DEPS = ["@snarky//snarkette"]
+GROUP_MAP_DEPS_OPAM = ["core_kernel"]
 
 GROUP_MAP_PPX = "@//bzl/ppx/exe:ppx_jane__ppx_deriving.eq"
 
@@ -29,41 +24,27 @@ GROUP_MAP_PPX_ARGS = [
     "group_map",
 ]
 
-##############
-ocaml_archive(
-    name = "group_map",
-    opts = [],
+#################
+ocaml_ns_library(
+    name   = "group_map",
+    main   = ":_Group_map",
+    submodules = {
+        ":_Bw19": "Bw19",
+        ":_Field_intf": "Field_intf",
+        ":_Group_map": "Group_map",
+    },
     visibility = ["//visibility:public"],
-    deps = GROUP_MAP_DEPS + [
-        # do not sort (buildifier)
-        ":_Bw19",
-        ":_Field_intf",
-        ":_Group_map",
-    ],
-)
-
-#########
-ocaml_ns(
-    name = "Group_map_ns",
-    ns = "group_map",
-    opts = [],
-    submodules = [
-        # do not sort (buildifier)
-        "bw19.ml",
-        "field_intf.ml",
-        "group_map.ml",
-    ],
 )
 
 #############
 ocaml_module(
     name = "_Bw19",
-    src = "bw19.ml",
-    ns = ":Group_map_ns",
     opts = GROUP_MAP_MODULE_OPTS,
     ppx = GROUP_MAP_PPX,
     ppx_args = GROUP_MAP_PPX_ARGS,
-    deps = GROUP_MAP_DEPS + [
+    struct = "bw19.ml",
+    deps_opam = GROUP_MAP_DEPS_OPAM,
+	deps = GROUP_MAP_DEPS + [
         # do not sort (buildifier)
         ":_Field_intf",
     ],
@@ -72,24 +53,24 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Field_intf",
-    src = "field_intf.ml",
-    ns = ":Group_map_ns",
     opts = GROUP_MAP_MODULE_OPTS,
     ppx = GROUP_MAP_PPX,
     ppx_args = GROUP_MAP_PPX_ARGS,
+    struct = "field_intf.ml",
     deps = GROUP_MAP_DEPS,
+    deps_opam = GROUP_MAP_DEPS_OPAM,
 )
 
 #############
 ocaml_module(
     name = "_Group_map",
-    src = "group_map.ml",
-    intf = ":_Group_map.cmi",
-    ns = ":Group_map_ns",
     opts = GROUP_MAP_MODULE_OPTS,
     ppx = GROUP_MAP_PPX,
     ppx_args = GROUP_MAP_PPX_ARGS,
-    deps = GROUP_MAP_DEPS + [
+    sig = ":_Group_map.cmi",
+    struct = "group_map.ml",
+    deps_opam = GROUP_MAP_DEPS_OPAM,
+	deps = GROUP_MAP_DEPS + [
         # do not sort (buildifier)
         ":_Bw19",
         ":_Field_intf",
@@ -97,14 +78,14 @@ ocaml_module(
 )
 
 ################
-ocaml_interface(
+ocaml_signature(
     name = "_Group_map.cmi",
     src = "group_map.mli",
-    ns = ":Group_map_ns",
     opts = GROUP_MAP_INTERFACE_OPTS,
     ppx = GROUP_MAP_PPX,
     ppx_args = GROUP_MAP_PPX_ARGS,
-    deps = GROUP_MAP_DEPS + [
+    deps_opam = GROUP_MAP_DEPS_OPAM,
+	deps = GROUP_MAP_DEPS + [
         # do not sort (buildifier)
         ":_Bw19",
         ":_Field_intf",

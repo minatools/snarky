@@ -7,20 +7,14 @@ load(
 
 ###########
 ppx_module(
-    name = "ppx_h_list",
-    src = "ppx_h_list.ml",
-    lazy_deps = [
+    name   = "ppx_h_list",
+    struct = "ppx_h_list.ml",
+    deps_adjunct = [
         # do not sort (buildifier)
         "@snarky//h_list",
     ],
-    opts = [],
     ppx = "@//bzl/ppx/exe:ppxlib.metaquot",
-    ppx_args = [
-        # do not sort (buildifier)
-    ],
-    visibility = ["//visibility:public"],
-    deps = [
-        # do not sort (buildifier)
-        "@opam//pkg:ppxlib",
-    ],
+    ppx_args = [],
+    deps_opam = ["ppxlib"],
+    visibility = ["//visibility:public"]
 )

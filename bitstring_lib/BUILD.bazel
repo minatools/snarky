@@ -1,25 +1,21 @@
-## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
-
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_archive",
-    "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns",
+    "ocaml_ns_archive",
+    "ocaml_ns_library",
+    "ocaml_signature",
 )
 
 ################################################################
 ## STANZA 1: LIBRARY BITSTRING_LIB
 ################################################################
-BITSTRING_LIB_INTERFACE_OPTS = []
+BITSTRING_LIB_SIGNATURE_OPTS = []
 
 BITSTRING_LIB_MODULE_OPTS = []
 
-BITSTRING_LIB_DEPS = [
-    # do not sort (buildifier)
-    "@opam//pkg:core_kernel",
-    "@snarky//tuple_lib",
-]
+BITSTRING_LIB_DEPS = []
+BITSTRING_LIB_DEPS_OPAM = ["core_kernel"]
 
 BITSTRING_LIB_PPX = "@//bzl/ppx/exe:ppx_jane__ppx_deriving.eq"
 
@@ -29,48 +25,34 @@ BITSTRING_LIB_PPX_ARGS = [
     "bitstring_lib",
 ]
 
-##############
-ocaml_archive(
-    name = "bitstring_lib",
-    doc = "Bitstring library",
-    opts = [],
-    visibility = ["//visibility:public"],
-    deps = BITSTRING_LIB_DEPS + [
-        # do not sort (buildifier)
-        ":_Bitstring",
-    ],
-)
-
 #########
-ocaml_ns(
-    name = "Bitstring_lib_ns",
-    ns = "bitstring_lib",
-    opts = [],
-    submodules = [
-        # do not sort (buildifier)
-        "bitstring.ml",
-    ],
+ocaml_ns_library(
+    name = "bitstring_lib",
+    submodules = {
+        ":_Bitstring": "Bitstring",
+    },
+    visibility = ["//visibility:public"]
 )
 
 #############
 ocaml_module(
     name = "_Bitstring",
-    src = "bitstring.ml",
-    intf = ":_Bitstring.cmi",
-    ns = ":Bitstring_lib_ns",
+    sig  = ":_Bitstring.cmi",
     opts = BITSTRING_LIB_MODULE_OPTS,
     ppx = BITSTRING_LIB_PPX,
     ppx_args = BITSTRING_LIB_PPX_ARGS,
-    deps = BITSTRING_LIB_DEPS,
+    struct = "bitstring.ml",
+    deps = ["//tuple_lib"], # BITSTRING_LIB_DEPS,
+    deps_opam = BITSTRING_LIB_DEPS_OPAM,
 )
 
 ################
-ocaml_interface(
+ocaml_signature(
     name = "_Bitstring.cmi",
     src = "bitstring.mli",
-    ns = ":Bitstring_lib_ns",
-    opts = BITSTRING_LIB_INTERFACE_OPTS,
+    opts = BITSTRING_LIB_SIGNATURE_OPTS,
     ppx = BITSTRING_LIB_PPX,
     ppx_args = BITSTRING_LIB_PPX_ARGS,
-    deps = BITSTRING_LIB_DEPS,
+    deps = ["//tuple_lib"], # BITSTRING_LIB_DEPS,
+    deps_opam = BITSTRING_LIB_DEPS_OPAM
 )

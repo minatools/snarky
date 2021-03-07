@@ -1,24 +1,15 @@
-## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
-
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
-    "ocaml_archive",
-    "ocaml_interface",
     "ocaml_module",
-    "ocaml_ns",
+    "ocaml_ns_archive",
+    "ocaml_ns_library",
+    "ocaml_signature",
 )
 
 ################################################################
 ## STANZA 1: LIBRARY SPONGE
 ################################################################
-SPONGE_INTERFACE_OPTS = []
-
-SPONGE_MODULE_OPTS = []
-
-SPONGE_DEPS = [
-    # do not sort (buildifier)
-    "@opam//pkg:core_kernel",
-]
+SPONGE_DEPS_OPAM = ["core_kernel"]
 
 SPONGE_PPX = "@//bzl/ppx/exe:ppx_jane__ppx_deriving.eq"
 
@@ -28,43 +19,27 @@ SPONGE_PPX_ARGS = [
     "sponge",
 ]
 
-##############
-ocaml_archive(
-    name = "sponge",
-    opts = [],
-    visibility = ["//visibility:public"],
-    deps = SPONGE_DEPS + [
-        # do not sort (buildifier)
-        ":_Constants",
-        ":_Intf",
-        ":_Params",
-        ":_Sponge",
-    ],
-)
-
 #########
-ocaml_ns(
-    name = "Sponge_ns",
-    ns = "sponge",
-    opts = [],
-    submodules = [
-        # do not sort (buildifier)
-        "constants.ml",
-        "intf.ml",
-        "params.ml",
-        "sponge.ml",
-    ],
+ocaml_ns_library(
+    name = "sponge",
+    main = ":_Sponge",
+    submodules = {
+        ":_Constants": "Constants",
+        ":_Intf": "Intf",
+        ":_Params":"Params",
+        ":_Sponge": "Sponge",
+    },
+    visibility = ["//visibility:public"]
 )
 
 #############
 ocaml_module(
     name = "_Constants",
-    src = "constants.ml",
-    ns = ":Sponge_ns",
-    opts = SPONGE_MODULE_OPTS,
+    struct = "constants.ml",
     ppx = SPONGE_PPX,
     ppx_args = SPONGE_PPX_ARGS,
-    deps = SPONGE_DEPS + [
+    deps_opam = SPONGE_DEPS_OPAM,
+    deps = [
         # do not sort (buildifier)
         ":_Params",
     ],
@@ -73,12 +48,11 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Intf",
-    src = "intf.ml",
-    ns = ":Sponge_ns",
-    opts = SPONGE_MODULE_OPTS,
+    struct = "intf.ml",
     ppx = SPONGE_PPX,
     ppx_args = SPONGE_PPX_ARGS,
-    deps = SPONGE_DEPS + [
+    deps_opam = SPONGE_DEPS_OPAM,
+    deps = [
         # do not sort (buildifier)
         ":_Params",
     ],
@@ -87,24 +61,23 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Params",
-    src = "params.ml",
-    ns = ":Sponge_ns",
-    opts = SPONGE_MODULE_OPTS,
+    struct = "params.ml",
+    # ns_env = ":_ns_env",
     ppx = SPONGE_PPX,
     ppx_args = SPONGE_PPX_ARGS,
-    deps = SPONGE_DEPS,
+    deps_opam = SPONGE_DEPS_OPAM
 )
 
 #############
 ocaml_module(
-    name = "_Sponge",
-    src = "sponge.ml",
-    intf = ":_Sponge.cmi",
-    ns = ":Sponge_ns",
-    opts = SPONGE_MODULE_OPTS,
+    name   = "_Sponge",
+    struct = "sponge.ml",
+    sig    = ":_Sponge.cmi",
     ppx = SPONGE_PPX,
     ppx_args = SPONGE_PPX_ARGS,
-    deps = SPONGE_DEPS + [
+    ppx_print = "@ppx//print:text",
+    deps_opam = SPONGE_DEPS_OPAM,
+    deps = [
         # do not sort (buildifier)
         ":_Constants",
         ":_Intf",
@@ -113,14 +86,13 @@ ocaml_module(
 )
 
 ################
-ocaml_interface(
-    name = "_Sponge.cmi",
-    src = "sponge.mli",
-    ns = ":Sponge_ns",
-    opts = SPONGE_INTERFACE_OPTS,
+ocaml_signature(
+    name   = "_Sponge.cmi",
+    src    = "sponge.mli",
     ppx = SPONGE_PPX,
     ppx_args = SPONGE_PPX_ARGS,
-    deps = SPONGE_DEPS + [
+    deps_opam = SPONGE_DEPS_OPAM,
+    deps = [
         # do not sort (buildifier)
         ":_Intf",
         ":_Params",

@@ -1,85 +1,55 @@
-## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
-
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
-    "ocaml_archive",
-    "ocaml_interface",
+    # "ocaml_archive",
     "ocaml_module",
-    "ocaml_ns",
+    "ocaml_ns_archive",
+    "ocaml_ns_library",
+    "ocaml_signature",
     "ppx_executable",
 )
 
 ################################################################
 ## STANZA 1: LIBRARY SNARKETTE
 ################################################################
-SNARKETTE_INTERFACE_OPTS = []
-
 SNARKETTE_MODULE_OPTS = []
-
-SNARKETTE_PPX_EXECUTABLE_OPTS = []
 
 SNARKETTE_DEPS = [
     # do not sort (buildifier)
-    "@opam//pkg:num",
-    "@opam//pkg:core_kernel",
-    "@opam//pkg:bignum",
-    "@snarky//tuple_lib",
-    "@snarky//fold_lib",
+    "//tuple_lib",
+    "//fold_lib",
+]
+SNARKETTE_DEPS_OPAM = [
+    "num",
+    "core_kernel",
+    "bignum",
 ]
 
-##############
-ocaml_archive(
-    name = "snarkette",
-    opts = [],
-    visibility = ["//visibility:public"],
-    deps = SNARKETTE_DEPS + [
-        # do not sort (buildifier)
-        ":_Bowe_gabizon",
-        ":_Elliptic_curve",
-        ":_Elliptic_curve_intf",
-        ":_Fields",
-        ":_Groth16",
-        ":_Groth_maller",
-        ":_Mnt4753",
-        ":_Mnt4_80",
-        ":_Mnt6753",
-        ":_Mnt6_80",
-        ":_Nat",
-        ":_Nat_intf",
-        ":_Pairing",
-        ":_Tweedle",
-    ],
-)
-
 #########
-ocaml_ns(
-    name = "Snarkette_ns",
-    ns = "snarkette",
-    opts = [],
-    submodules = [
-        # do not sort (buildifier)
-        "bowe_gabizon.ml",
-        "elliptic_curve.ml",
-        "elliptic_curve_intf.ml",
-        "fields.ml",
-        "groth16.ml",
-        "groth_maller.ml",
-        "mnt4753.ml",
-        "mnt4_80.ml",
-        "mnt6753.ml",
-        "mnt6_80.ml",
-        "nat.ml",
-        "nat_intf.ml",
-        "pairing.ml",
-        "tweedle.ml",
-    ],
+ocaml_ns_library(
+    name = "snarkette",
+    # ns_env = "snarkette",
+    submodules = {
+        ":_Bowe_gabizon": "Bowe_gabizon",
+        ":_Elliptic_curve": "Elliptic_curve",
+        ":_Elliptic_curve_intf": "Elliptic_curve_intf",
+        ":_Fields": "Fields",
+        ":_Groth16": "Groth16",
+        ":_Groth_maller": "Groth_maller",
+        ":_Mnt4753": "Mnt4753",
+        ":_Mnt4_80": "Mnt4_80",
+        ":_Mnt6753": "Mnt6753",
+        ":_Mnt6_80": "Mnt6_80",
+        ":_Nat": "Nat",
+        ":_Nat_intf": "Nat_intf",
+        ":_Pairing": "Pairing",
+        ":_Tweedle": "Tweedle",
+    },
+    visibility = ["//visibility:public"]
 )
 
 #############
 ocaml_module(
     name = "_Bowe_gabizon",
-    src = "bowe_gabizon.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -87,7 +57,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    struct = "bowe_gabizon.ml",
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Fields",
         ":_Nat_intf",
@@ -98,8 +70,6 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Elliptic_curve",
-    src = "elliptic_curve.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -107,14 +77,14 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
+    struct = "elliptic_curve.ml",
     deps = SNARKETTE_DEPS,
+    deps_opam = SNARKETTE_DEPS_OPAM
 )
 
 #############
 ocaml_module(
     name = "_Elliptic_curve_intf",
-    src = "elliptic_curve_intf.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -122,14 +92,13 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
+    struct = "elliptic_curve_intf.ml",
     deps = SNARKETTE_DEPS,
 )
 
 #############
 ocaml_module(
     name = "_Fields",
-    src = "fields.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -137,7 +106,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    struct = "fields.ml",
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Nat",
         ":_Nat_intf",
@@ -147,8 +118,6 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Groth16",
-    src = "groth16.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -156,7 +125,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    struct = "groth16.ml",
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Fields",
         ":_Nat_intf",
@@ -167,8 +138,6 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Groth_maller",
-    src = "groth_maller.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -176,7 +145,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    struct = "groth_maller.ml",
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Fields",
         ":_Nat_intf",
@@ -187,8 +158,6 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Mnt4753",
-    src = "mnt4753.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -196,7 +165,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    struct = "mnt4753.ml",
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Elliptic_curve",
         ":_Fields",
@@ -207,8 +178,6 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Mnt4_80",
-    src = "mnt4_80.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -216,7 +185,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    struct = "mnt4_80.ml",
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Elliptic_curve",
         ":_Fields",
@@ -227,8 +198,6 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Mnt6753",
-    src = "mnt6753.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -236,7 +205,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    struct = "mnt6753.ml",
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Bowe_gabizon",
         ":_Elliptic_curve",
@@ -251,8 +222,6 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Mnt6_80",
-    src = "mnt6_80.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -260,7 +229,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    struct = "mnt6_80.ml",
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Bowe_gabizon",
         ":_Elliptic_curve",
@@ -275,9 +246,6 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Nat",
-    src = "nat.ml",
-    intf = ":_Nat.cmi",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -285,22 +253,23 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
+    sig = ":_Nat.cmi",
+    struct = "nat.ml",
     deps = SNARKETTE_DEPS,
+    deps_opam = SNARKETTE_DEPS_OPAM,
 )
 
-################
-ocaml_interface(
-    name = "_Nat.cmi",
-    src = "nat.mli",
-    ns = ":Snarkette_ns",
-    opts = SNARKETTE_INTERFACE_OPTS,
+ocaml_signature(
+    name   = "_Nat.cmi",
+    src    = "nat.mli",
     ppx = ":ppx1.exe",
     ppx_args = [
         # do not sort (buildifier)
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Nat_intf",
     ],
@@ -309,8 +278,6 @@ ocaml_interface(
 #############
 ocaml_module(
     name = "_Nat_intf",
-    src = "nat_intf.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -318,14 +285,14 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
+    struct = "nat_intf.ml",
     deps = SNARKETTE_DEPS,
+    deps_opam = SNARKETTE_DEPS_OPAM,
 )
 
 #############
 ocaml_module(
     name = "_Pairing",
-    src = "pairing.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -333,7 +300,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    struct = "pairing.ml",
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Fields",
     ],
@@ -342,8 +311,6 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Tweedle",
-    src = "tweedle.ml",
-    ns = ":Snarkette_ns",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -351,7 +318,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    deps = SNARKETTE_DEPS + [
+    struct = "tweedle.ml",
+    deps_opam = SNARKETTE_DEPS_OPAM,
+	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)
         ":_Elliptic_curve",
         ":_Fields",
@@ -362,29 +331,29 @@ ocaml_module(
 ###############
 ppx_executable(
     name = "ppx1.exe",
-    lazy_deps = [
-        "@opam//pkg:ppx_expect.collector",
-        "@opam//pkg:yojson",
-        "@opam//pkg:ppx_hash.runtime-lib",
-        "@opam//pkg:ppx_deriving_yojson.runtime",
-        "@opam//pkg:ppx_sexp_conv.runtime-lib",
-        "@opam//pkg:ppx_deriving.runtime",
-        "@opam//pkg:ppx_assert.runtime-lib",
-        "@opam//pkg:ppx_compare.runtime-lib",
-        "@opam//pkg:ppx_inline_test.runtime-lib",
-        "@opam//pkg:ppx_bench.runtime-lib",
-        "@opam//pkg:ppx_enumerate.runtime-lib",
-        "@opam//pkg:ppx_module_timer.runtime",
-    ],
-    main = "//bzl/ppx/exe:Driver",
+    main = "//bzl/ppx/exe:ppxlib_driver",
     opts = [],
     visibility = [
         "//snarkette:__pkg__",
     ],
-    deps = [
-        "@opam//pkg:ppx_deriving.eq",
-        "@opam//pkg:ppx_deriving_yojson",
-        "@opam//pkg:ppx_jane",
-        "@opam//pkg:ppxlib",
+    deps_adjunct_opam = [
+        "ppx_expect.collector",
+        "yojson",
+        "ppx_hash.runtime-lib",
+        "ppx_deriving_yojson.runtime",
+        "ppx_sexp_conv.runtime-lib",
+        "ppx_deriving.runtime",
+        "ppx_assert.runtime-lib",
+        "ppx_compare.runtime-lib",
+        "ppx_inline_test.runtime-lib",
+        "ppx_bench.runtime-lib",
+        "ppx_enumerate.runtime-lib",
+        "ppx_module_timer.runtime",
+    ],
+    deps_opam = [
+        "ppx_deriving.eq",
+        "ppx_deriving_yojson",
+        "ppx_jane",
+        "ppxlib",
     ],
 )

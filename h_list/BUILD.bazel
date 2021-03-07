@@ -8,8 +8,6 @@ load(
 #############
 ocaml_module(
     name = "h_list",
-    src = "h_list.ml",
-    opts = [],
+    struct = "h_list.ml",
     visibility = ["//visibility:public"],
-    deps = [],
 )

@@ -8,7 +8,6 @@ load(
 #############
 ocaml_module(
     name = "snarky_curve",
-    src = "snarky_curve.ml",
     opts = [],
     ppx = "//bzl/ppx/exe:ppx_jane__ppx_deriving.eq",
     ppx_args = [
@@ -16,11 +15,14 @@ ocaml_module(
         "-inline-test-lib",
         "snarky_curve",
     ],
+    struct = "snarky_curve.ml",
     visibility = ["//visibility:public"],
     deps = [
-        "@opam//pkg:core_kernel",
-        "@opam//pkg:digestif",
-        "@snarky//group_map",
-        "@snarky//src/base:snarky_backendless",
+        "//group_map",
+        "//src/base:snarky_backendless",
     ],
+    deps_opam = [
+        "core_kernel",
+        "digestif",
+    ]
 )

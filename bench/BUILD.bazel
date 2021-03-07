@@ -39,7 +39,6 @@ ocaml_archive(
 ocaml_ns(
     name = "Snarky_bench_ns",
     ns = "snarky_bench",
-    opts = [],
     submodules = [
         # do not sort (buildifier)
         "field_project.ml",
@@ -98,7 +97,7 @@ ocaml_module(
 ###############
 ppx_executable(
     name = "ppx1.exe",
-    lazy_deps = [
+    adjunct_deps = [
         "@opam//pkg:ppx_expect.collector",
         "@opam//pkg:ppx_hash.runtime-lib",
         "@opam//pkg:ppx_sexp_conv.runtime-lib",
@@ -109,7 +108,7 @@ ppx_executable(
         "@opam//pkg:ppx_enumerate.runtime-lib",
         "@opam//pkg:ppx_module_timer.runtime",
     ],
-    main = "//bzl/ppx/exe:Driver",
+    main = "//bzl/ppx/exe:ppxlib_driver",
     opts = [],
     visibility = [
         "//bench:__pkg__",
