@@ -21,8 +21,7 @@ SPONGE_PPX_ARGS = [
 
 #########
 ocaml_ns_library(
-    name = "sponge",
-    main = ":_Sponge",
+    name = "#sponge",
     submodules = {
         ":_Constants": "Constants",
         ":_Intf": "Intf",

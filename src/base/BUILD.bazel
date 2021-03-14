@@ -23,58 +23,58 @@ SNARKY_BACKENDLESS_PPX_EXECUTABLE_OPTS = []
  # (libraries bitstring_lib core_kernel h_list interval_union snarky_intf)
 
 SNARKY_BACKENDLESS_DEPS = [
-    # do not sort (buildifier)
-    "//bitstring_lib",
-    "//h_list",
-    "//interval_union",
-    "//src/intf:snarky_intf",
+    # "//bitstring_lib",
+    # "//h_list",
+    # "//interval_union",
+    # "//src/intf:snarky_intf",
 ]
 
 SNARKY_BACKENDLESS_DEPS_OPAM = ["core_kernel"]
 
 #################
 ocaml_ns_library(
-    name = "snarky_backendless",
-    main = ":_Snarky_backendless",
-    submodules = {
-        # do not sort (buildifier)
-        ":_As_prover": "As_prover",
-        ":_As_prover0": "As_prover0",
-        ":_As_prover_intf": "As_prover_intf",
-        ":_Backend_extended": "Backend_extended",
-        ":_Backend_intf": "Backend_intf",
-        ":_Bin_prot_io": "Bin_prot_io",
-        ":_Boolean": "Boolean",
-        ":_Checked": "Checked",
-        ":_Checked_intf": "Checked_intf",
-        ":_Checked_runner": "Checked_runner",
-        ":_Constraint": "Constraint",
-        ":_Constraint_system": "Constraint_system",
-        ":_Cvar": "Cvar",
-        ":_Enumerable": "Enumerable",
-        ":_Enumerable_intf": "Enumerable_intf",
-        ":_Free_monad": "Free_monad",
-        ":_Handle": "Handle",
-        ":_Knapsack": "Knapsack",
-        ":_Lens": "Lens",
-        ":_Merkle_tree": "Merkle_tree",
-        ":_Monad_let": "Monad_let",
-        ":_Monad_sequence": "Monad_sequence",
-        ":_Number": "Number",
-        ":_Number_intf": "Number_intf",
-        ":_Pedersen": "Pedersen",
-        ":_Request": "Request",
-        ":_Restrict_monad": "Restrict_monad",
-        ":_Run_state": "Run_state",
-        ":_Snark": "Snark",
-        ":_Snark0": "Snark0",
-        ":_Snark_intf": "Snark_intf",
-        ":_Snarky_backendless": "Snarky_backendless",
-        ":_Traversable": "Traversable",
-        ":_Typ": "Typ",
-        ":_Typ_monads": "Typ_monads",
-        ":_Types": "Types",
-    },
+    name = "#snarky_backendless",
+    submodules = [
+        ":_As_prover",
+        ":_As_prover0",
+        ":_As_prover_intf",
+        ":_Backend_extended",
+        ":_Backend_intf",
+        ":_Bin_prot_io",
+        ":_Boolean",
+        ":_Checked",
+        ":_Checked_intf",
+        ":_Checked_runner",
+        ":_Constraint",
+        ":_Constraint_system",
+        ":_Cvar",
+        ":_Enumerable",
+        ":_Enumerable_intf",
+        ":_Free_monad",
+        ":_Handle",
+        ":_Knapsack",
+        ":_Lens",
+        ":_Merkle_tree",
+        ":_Monad_let",
+        ":_Monad_sequence",
+        ":_Number",
+        ":_Number_intf",
+        ":_Pedersen",
+        ":_Request",
+        ":_Restrict_monad",
+        ":_Run_state",
+        ":_Snark",
+        ":_Snark0",
+        ":_Snark_intf",
+        ":_Snarky_backendless",
+        ":_Traversable",
+        ":_Typ",
+        ":_Typ_monads",
+        ":_Types",
+        ## add aliasing equations to resolver for deps:
+        # "//bitstring_lib:bitstring_lib",
+        # "//src/intf:$snarky_intf",
+    ],
     visibility = ["//visibility:public"],
     # deps = SNARKY_BACKENDLESS_DEPS
     # deps_opam = SNARKY_BACKENDLESS_DEPS_OPAM,
@@ -351,7 +351,9 @@ ocaml_module(
         "snarky_backendless",
     ],
     struct = "constraint.ml",
-    deps = SNARKY_BACKENDLESS_DEPS,
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        "//src/intf:#snarky_intf",
+    ],
 	deps_opam = SNARKY_BACKENDLESS_DEPS_OPAM,
 )
 
@@ -384,7 +386,9 @@ ocaml_module(
         "snarky_backendless",
     ],
     struct = "cvar.ml",
-    deps = SNARKY_BACKENDLESS_DEPS,
+    deps = SNARKY_BACKENDLESS_DEPS + [
+        "//src/intf:#snarky_intf",
+    ],
 	deps_opam = SNARKY_BACKENDLESS_DEPS_OPAM,
 )
 
@@ -672,6 +676,7 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Pedersen",
+    struct = "pedersen.ml",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -679,10 +684,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarky_backendless",
     ],
-    struct = "pedersen.ml",
     deps_opam = SNARKY_BACKENDLESS_DEPS_OPAM,
     deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
+        "//interval_union",
         ":_Boolean",
         ":_Checked",
         ":_Snark_intf",
@@ -844,6 +848,7 @@ ocaml_signature(
 #############
 ocaml_module(
     name = "_Snark_intf",
+    struct = "snark_intf.ml",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -851,10 +856,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarky_backendless",
     ],
-    struct = "snark_intf.ml",
     deps_opam = SNARKY_BACKENDLESS_DEPS_OPAM, # + ["bignum.bigint"],
-    # deps = SNARKY_BACKENDLESS_DEPS + [
     deps = [
+        "//bitstring_lib:#bitstring_lib",
         # do not sort (buildifier)
         ":_As_prover",
         ":_Boolean",
@@ -945,6 +949,7 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Typ",
+    struct = "typ.ml",
     opts = SNARKY_BACKENDLESS_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -952,10 +957,9 @@ ocaml_module(
         "-inline-test-lib",
         "snarky_backendless",
     ],
-    struct = "typ.ml",
     deps_opam = SNARKY_BACKENDLESS_DEPS_OPAM,
     deps = SNARKY_BACKENDLESS_DEPS + [
-        # do not sort (buildifier)
+        "//h_list",
         ":_As_prover",
         ":_As_prover_intf",
         ":_Checked",

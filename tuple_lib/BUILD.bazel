@@ -31,16 +31,15 @@ TUPLE_LIB_PPX_ARGS = [
 
 #########
 ocaml_ns_library(
-    name = "tuple_lib",
-    main = ":_Tuple_lib",
-    submodules = {
-        ":_Double": "Double",
-        ":_Four": "Four",
-        ":_Intf": "Intf",
-        ":_Quadruple": "Quadruple",
-        ":_Triple": "Triple",
-        ":_Tuple_lib": "Tuple_lib",
-    },
+    name = "#tuple_lib",
+    submodules = [
+        ":_Double",
+        ":_Four",
+        ":_Intf",
+        ":_Quadruple",
+        ":_Triple",
+        ":_Tuple_lib"
+    ],
     visibility = [
         "//visibility:public"
     ]

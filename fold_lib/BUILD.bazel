@@ -6,7 +6,7 @@ load(
 
 #########
 ocaml_ns_library(
-    name = "fold_lib",
+    name = "#fold_lib",
     submodules = {
         ":_Fold": "Fold"
     },

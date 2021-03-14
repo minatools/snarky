@@ -18,8 +18,8 @@ ocaml_module(
     struct = "snarky_curve.ml",
     visibility = ["//visibility:public"],
     deps = [
-        "//group_map",
-        "//src/base:snarky_backendless",
+        "//group_map:#group_map",
+        "//src/base:#snarky_backendless",
     ],
     deps_opam = [
         "core_kernel",

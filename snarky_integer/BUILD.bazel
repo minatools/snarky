@@ -6,7 +6,7 @@ load(
 )
 
 ################################################################
-SNARKY_INTEGER_DEPS = ["@snarky//src/base:snarky_backendless"]
+SNARKY_INTEGER_DEPS = ["@snarky//src/base:#snarky_backendless"]
 
 SNARKY_INTEGER_DEPS_OPAM = ["core_kernel", "bignum"]
 
@@ -20,7 +20,7 @@ SNARKY_INTEGER_PPX_ARGS = [
 
 #########
 ocaml_ns_library(
-    name = "snarky_integer",
+    name = "#snarky_integer",
     submodules = {
          ":_Integer": "Integer",
          ":_Util": "Util",

@@ -18,15 +18,16 @@ SNARKY_INTF_DEPS_OPAM = [
 
 #########
 ocaml_ns_library(
-    name = "snarky_intf",
+    name = "#snarky_intf",
     submodules = {
         ":_Bigint_intf": "Bigint_intf",
         ":_Field": "Field",
         ":_Vector": "Vector",
     },
     visibility = [
-        "//snarky_universe:__pkg__",
-        "//src/base:__pkg__"
+        "//visibility:public",
+        # "//snarky_universe:__pkg__",
+        # "//src/base:__pkg__"
     ]
 )
 

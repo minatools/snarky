@@ -46,7 +46,7 @@ SNARKY_UNIVERSE_DEPS_OPAM = [
 
 #########
 ocaml_ns_library(
-    name = "snarky_universe",
+    name = "#snarky_universe",
     submodules = {
         ":_Curve": "Curve",
         ":_Group": "Group",

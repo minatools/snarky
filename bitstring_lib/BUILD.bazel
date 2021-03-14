@@ -27,7 +27,7 @@ BITSTRING_LIB_PPX_ARGS = [
 
 #########
 ocaml_ns_library(
-    name = "bitstring_lib",
+    name = "#bitstring_lib",
     submodules = {
         ":_Bitstring": "Bitstring",
     },
@@ -42,7 +42,7 @@ ocaml_module(
     ppx = BITSTRING_LIB_PPX,
     ppx_args = BITSTRING_LIB_PPX_ARGS,
     struct = "bitstring.ml",
-    deps = ["//tuple_lib"], # BITSTRING_LIB_DEPS,
+    deps = ["//tuple_lib:#tuple_lib"],
     deps_opam = BITSTRING_LIB_DEPS_OPAM,
 )
 
@@ -53,6 +53,6 @@ ocaml_signature(
     opts = BITSTRING_LIB_SIGNATURE_OPTS,
     ppx = BITSTRING_LIB_PPX,
     ppx_args = BITSTRING_LIB_PPX_ARGS,
-    deps = ["//tuple_lib"], # BITSTRING_LIB_DEPS,
+    deps = ["//tuple_lib:#tuple_lib"],
     deps_opam = BITSTRING_LIB_DEPS_OPAM
 )

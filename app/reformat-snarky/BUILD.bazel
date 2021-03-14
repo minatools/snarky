@@ -1,5 +1,3 @@
-## OBAZL GENERATED FILE ## To retain edits (prevent overwrite), delete this line.
-
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_executable",
@@ -13,10 +11,9 @@ REFORMAT_EXECUTABLE_OPTS = []
 
 REFORMAT_MODULE_OPTS = []
 
-REFORMAT_DEPS = [
-    # do not sort (buildifier)
-    "@opam//pkg:core",
-    "@opam//pkg:async",
+REFORMAT_DEPS_OPAM = [
+    "core",
+    "async",
 ]
 
 REFORMAT_PPX = "@//bzl/ppx/exe:ppx_jane"
@@ -32,18 +29,19 @@ ocaml_executable(
     name = "reformat.exe",
     opts = REFORMAT_EXECUTABLE_OPTS,
     visibility = ["//visibility:public"],
-    deps = REFORMAT_DEPS + [
+    deps = [
         # do not sort (buildifier)
         ":_Reformat",
     ],
+    deps_opam =REFORMAT_DEPS_OPAM
 )
 
 #############
 ocaml_module(
-    name = "_Reformat",
-    src = "reformat.ml",
+    name   = "_Reformat",
+    struct = "reformat.ml",
     opts = REFORMAT_MODULE_OPTS,
     ppx = REFORMAT_PPX,
     ppx_args = REFORMAT_PPX_ARGS,
-    deps = REFORMAT_DEPS,
+    deps_opam =REFORMAT_DEPS_OPAM
 )

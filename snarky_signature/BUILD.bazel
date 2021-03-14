@@ -6,7 +6,7 @@ load(
 
 #########
 ocaml_ns_library(
-    name = "snarky_signature",
+    name = "#snarky_signature",
     submodules = {
          ":_Signature": "Signature",
     },

@@ -15,8 +15,8 @@ SNARKETTE_MODULE_OPTS = []
 
 SNARKETTE_DEPS = [
     # do not sort (buildifier)
-    "//tuple_lib",
-    "//fold_lib",
+    "//tuple_lib:#tuple_lib",
+    "//fold_lib:#fold_lib",
 ]
 SNARKETTE_DEPS_OPAM = [
     "num",
@@ -26,24 +26,26 @@ SNARKETTE_DEPS_OPAM = [
 
 #########
 ocaml_ns_library(
-    name = "snarkette",
-    # ns_env = "snarkette",
-    submodules = {
-        ":_Bowe_gabizon": "Bowe_gabizon",
-        ":_Elliptic_curve": "Elliptic_curve",
-        ":_Elliptic_curve_intf": "Elliptic_curve_intf",
-        ":_Fields": "Fields",
-        ":_Groth16": "Groth16",
-        ":_Groth_maller": "Groth_maller",
-        ":_Mnt4753": "Mnt4753",
-        ":_Mnt4_80": "Mnt4_80",
-        ":_Mnt6753": "Mnt6753",
-        ":_Mnt6_80": "Mnt6_80",
-        ":_Nat": "Nat",
-        ":_Nat_intf": "Nat_intf",
-        ":_Pairing": "Pairing",
-        ":_Tweedle": "Tweedle",
-    },
+    name = "#snarkette",
+    submodules = [
+        ":_Bowe_gabizon",
+        ":_Elliptic_curve",
+        ":_Elliptic_curve_intf",
+        ":_Fields",
+        ## fields.ml opens Fold_lib - listing it as a submodule adds the needed
+        ## aliasing equation to the Snarkette resolver module.
+        # "//fold_lib",
+        ":_Groth16",
+        ":_Groth_maller",
+        ":_Mnt4753",
+        ":_Mnt4_80",
+        ":_Mnt6753",
+        ":_Mnt6_80",
+        ":_Nat",
+        ":_Nat_intf",
+        ":_Pairing",
+        ":_Tweedle"
+    ],
     visibility = ["//visibility:public"]
 )
 
@@ -99,6 +101,7 @@ ocaml_module(
 #############
 ocaml_module(
     name = "_Fields",
+    struct = "fields.ml",
     opts = SNARKETTE_MODULE_OPTS,
     ppx = ":ppx1.exe",
     ppx_args = [
@@ -106,7 +109,6 @@ ocaml_module(
         "-inline-test-lib",
         "snarkette",
     ],
-    struct = "fields.ml",
     deps_opam = SNARKETTE_DEPS_OPAM,
 	deps = SNARKETTE_DEPS + [
         # do not sort (buildifier)

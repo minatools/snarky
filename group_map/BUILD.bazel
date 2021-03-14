@@ -13,7 +13,7 @@ GROUP_MAP_INTERFACE_OPTS = []
 
 GROUP_MAP_MODULE_OPTS = []
 
-GROUP_MAP_DEPS = ["@snarky//snarkette"]
+GROUP_MAP_DEPS = ["@snarky//snarkette:#snarkette"]
 GROUP_MAP_DEPS_OPAM = ["core_kernel"]
 
 GROUP_MAP_PPX = "@//bzl/ppx/exe:ppx_jane__ppx_deriving.eq"
@@ -26,8 +26,7 @@ GROUP_MAP_PPX_ARGS = [
 
 #################
 ocaml_ns_library(
-    name   = "group_map",
-    main   = ":_Group_map",
+    name   = "#group_map",
     submodules = {
         ":_Bw19": "Bw19",
         ":_Field_intf": "Field_intf",
