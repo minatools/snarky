@@ -1,8 +1,8 @@
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
-    # "ppx_archive",
     "ppx_executable",
     "ppx_module",
+    "ppx_ns_archive",
 )
 
 PPX_SNARKY_DEPS_OPAM = [
@@ -12,35 +12,43 @@ PPX_SNARKY_DEPS_OPAM = [
     "core_kernel",
 ]
 
-###########
-ppx_module(
+#################
+ppx_ns_archive(
     name = "ppx_snarky",
-    deps_opam = PPX_SNARKY_DEPS_OPAM,
-    # ns_env = ":_ns_env",
-    ppx = ":ppx1.exe",
-    struct = "ppx_snarky.ml",
-    deps = [
-        # do not sort (buildifier)
-        ":Snarky_module",
-        ":Snarkydef",
+    opts = ["-linkall"],
+    submodules = [
+        ":_Ppx_snarky",
+        ":_Snarky_module",
+        ":_Snarkydef"
     ],
     visibility = ["//visibility:public"],
 )
 
 ###########
 ppx_module(
-    name = "Snarky_module",
+    name = "_Ppx_snarky",
     deps_opam = PPX_SNARKY_DEPS_OPAM,
-    # ns_env = ":_ns_env",
+    ppx = ":ppx1.exe",
+    struct = "ppx_snarky.ml",
+    deps = [
+        # do not sort (buildifier)
+        ":_Snarky_module",
+        ":_Snarkydef",
+    ],
+)
+
+###########
+ppx_module(
+    name = "_Snarky_module",
+    deps_opam = PPX_SNARKY_DEPS_OPAM,
     ppx = ":ppx1.exe",
     struct = "snarky_module.ml",
 )
 
 ###########
 ppx_module(
-    name = "Snarkydef",
+    name = "_Snarkydef",
     struct = "snarkydef.ml",
-    # ns_env = ":_ns_env",
     ppx = ":ppx1.exe",
     deps_opam = PPX_SNARKY_DEPS_OPAM,
 )

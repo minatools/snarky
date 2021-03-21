@@ -4,7 +4,6 @@ load(
     "ocaml_signature",
     "ocaml_module",
     "ocaml_ns_archive",
-    "ocaml_ns_library",
     "ppx_executable",
 )
 
@@ -32,8 +31,8 @@ SNARKY_BACKENDLESS_DEPS = [
 SNARKY_BACKENDLESS_DEPS_OPAM = ["core_kernel"]
 
 #################
-ocaml_ns_library(
-    name = "#snarky_backendless",
+ocaml_ns_archive(
+    name = "snarky_backendless",
     submodules = [
         ":_As_prover",
         ":_As_prover0",
@@ -71,13 +70,8 @@ ocaml_ns_library(
         ":_Typ",
         ":_Typ_monads",
         ":_Types",
-        ## add aliasing equations to resolver for deps:
-        # "//bitstring_lib:bitstring_lib",
-        # "//src/intf:$snarky_intf",
     ],
     visibility = ["//visibility:public"],
-    # deps = SNARKY_BACKENDLESS_DEPS
-    # deps_opam = SNARKY_BACKENDLESS_DEPS_OPAM,
 )
 
 #############
@@ -352,7 +346,7 @@ ocaml_module(
     ],
     struct = "constraint.ml",
     deps = SNARKY_BACKENDLESS_DEPS + [
-        "//src/intf:#snarky_intf",
+        "//src/intf:snarky_intf",
     ],
 	deps_opam = SNARKY_BACKENDLESS_DEPS_OPAM,
 )
@@ -387,7 +381,7 @@ ocaml_module(
     ],
     struct = "cvar.ml",
     deps = SNARKY_BACKENDLESS_DEPS + [
-        "//src/intf:#snarky_intf",
+        "//src/intf:snarky_intf",
     ],
 	deps_opam = SNARKY_BACKENDLESS_DEPS_OPAM,
 )
@@ -858,7 +852,7 @@ ocaml_module(
     ],
     deps_opam = SNARKY_BACKENDLESS_DEPS_OPAM, # + ["bignum.bigint"],
     deps = [
-        "//bitstring_lib:#bitstring_lib",
+        "//bitstring_lib:bitstring_lib",
         # do not sort (buildifier)
         ":_As_prover",
         ":_Boolean",

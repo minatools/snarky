@@ -2,11 +2,24 @@ load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_signature",
     "ocaml_module",
+    "ocaml_ns_archive",
+)
+
+#################
+ocaml_ns_archive(
+    name = "interval_union",
+    submodules = [
+        ":_Interval_union"
+    ],
+    visibility = [
+        # "//visibility:public"
+        "//src/base:__pkg__"
+    ]
 )
 
 #############
 ocaml_module(
-    name   = "interval_union",
+    name   = "_Interval_union",
     struct = "interval_union.ml",
     sig    = ":_Interval_union.cmi",
     ppx = "//bzl/ppx/exe:ppx_jane__ppx_deriving.eq",
@@ -16,7 +29,6 @@ ocaml_module(
         "interval_union",
     ],
     deps_opam = ["core_kernel"],
-    visibility = ["//visibility:public"]
 )
 
 ################

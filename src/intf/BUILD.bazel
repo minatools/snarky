@@ -2,7 +2,6 @@ load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_module",
     "ocaml_ns_archive",
-    "ocaml_ns_library",
     "ppx_executable",
 )
 
@@ -17,8 +16,8 @@ SNARKY_INTF_DEPS_OPAM = [
 ]
 
 #########
-ocaml_ns_library(
-    name = "#snarky_intf",
+ocaml_ns_archive(
+    name = "snarky_intf",
     submodules = {
         ":_Bigint_intf": "Bigint_intf",
         ":_Field": "Field",

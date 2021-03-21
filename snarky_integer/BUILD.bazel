@@ -2,11 +2,11 @@ load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_signature",
     "ocaml_module",
-    "ocaml_ns_library",
+    "ocaml_ns_archive",
 )
 
 ################################################################
-SNARKY_INTEGER_DEPS = ["@snarky//src/base:#snarky_backendless"]
+SNARKY_INTEGER_DEPS = ["@snarky//src/base:snarky_backendless"]
 
 SNARKY_INTEGER_DEPS_OPAM = ["core_kernel", "bignum"]
 
@@ -18,13 +18,13 @@ SNARKY_INTEGER_PPX_ARGS = [
     "snarky_integer",
 ]
 
-#########
-ocaml_ns_library(
-    name = "#snarky_integer",
-    submodules = {
-         ":_Integer": "Integer",
-         ":_Util": "Util",
-    },
+#################
+ocaml_ns_archive(
+    name = "snarky_integer",
+    submodules = [
+         ":_Integer",
+         ":_Util"
+    ],
     visibility = ["//visibility:public"]
 )
 

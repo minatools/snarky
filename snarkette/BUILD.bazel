@@ -1,9 +1,7 @@
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
-    # "ocaml_archive",
     "ocaml_module",
     "ocaml_ns_archive",
-    "ocaml_ns_library",
     "ocaml_signature",
     "ppx_executable",
 )
@@ -15,8 +13,8 @@ SNARKETTE_MODULE_OPTS = []
 
 SNARKETTE_DEPS = [
     # do not sort (buildifier)
-    "//tuple_lib:#tuple_lib",
-    "//fold_lib:#fold_lib",
+    "//tuple_lib:tuple_lib",
+    "//fold_lib:fold_lib",
 ]
 SNARKETTE_DEPS_OPAM = [
     "num",
@@ -25,8 +23,8 @@ SNARKETTE_DEPS_OPAM = [
 ]
 
 #########
-ocaml_ns_library(
-    name = "#snarkette",
+ocaml_ns_archive(
+    name = "snarkette",
     submodules = [
         ":_Bowe_gabizon",
         ":_Elliptic_curve",

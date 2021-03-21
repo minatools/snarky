@@ -3,7 +3,7 @@
 load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_module",
-    "ocaml_ns_library",
+    "ocaml_ns_archive",
     "ocaml_signature",
     "ppx_executable",
 )
@@ -25,28 +25,9 @@ SNARKY_UNIVERSE_DEPS_OPAM = [
     "core",
 ]
 
-##############
-# ocaml_archive(
-#     name = "snarky_universe",
-#     opts = [],
-#     visibility = ["//visibility:public"],
-#     deps = SNARKY_UNIVERSE_DEPS + [
-#         # do not sort (buildifier)
-#         ":_Curve",
-#         ":_Group",
-#         ":_Hash",
-#         ":_Input_spec",
-#         ":_Intf",
-#         ":_Membership_proof",
-#         ":_Merkle_tree_unchecked",
-#         ":_Snarky_universe",
-#     ],
-#     deps_opam = SNARKY_UNIVERSE_DEPS_OPAM
-# )
-
 #########
-ocaml_ns_library(
-    name = "#snarky_universe",
+ocaml_ns_archive(
+    name = "snarky_universe",
     submodules = {
         ":_Curve": "Curve",
         ":_Group": "Group",

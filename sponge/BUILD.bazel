@@ -2,7 +2,6 @@ load(
     "@obazl_rules_ocaml//ocaml:rules.bzl",
     "ocaml_module",
     "ocaml_ns_archive",
-    "ocaml_ns_library",
     "ocaml_signature",
 )
 
@@ -20,8 +19,8 @@ SPONGE_PPX_ARGS = [
 ]
 
 #########
-ocaml_ns_library(
-    name = "#sponge",
+ocaml_ns_archive(
+    name = "sponge",
     submodules = {
         ":_Constants": "Constants",
         ":_Intf": "Intf",
